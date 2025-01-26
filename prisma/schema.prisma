@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String          @id @default(uuid())
+  email            String          @unique
+  password         String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  profile          UserProfile?
+  decisions        UserDecision[]
+  businessMetrics  BusinessMetrics[]
+}
+
+model UserProfile {
+  id                    String    @id @default(uuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id])
+  currentLevel         Int       @default(1)
+  scenariosCompleted   Int       @default(0)
+  averagePerformance   Float     @default(0)
+  lastActive          DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model BusinessMetrics {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  timestamp       DateTime  @default(now())
+  annualRevenue   Float
+  revenueGrowth   Float
+  profitMargin    Float
+  cashFlow        Float
+  departmentMetrics Json
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Scenario {
+  id              String    @id @default(uuid())
+  description     String
+  complexityLevel Int
+  context         Json
+  solutions       Solution[]
+  decisions       UserDecision[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Solution {
+  id              String    @id @default(uuid())
+  scenarioId      String
+  scenario        Scenario  @relation(fields: [scenarioId], references: [id])
+  description     String
+  impacts         Json
+  aiReasoning     String
+  decisions       UserDecision[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model UserDecision {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  scenarioId      String
+  scenario        Scenario  @relation(fields: [scenarioId], references: [id])
+  solutionId      String
+  solution        Solution  @relation(fields: [solutionId], references: [id])
+  metricsBefore   Json
+  metricsAfter    Json
+  timestamp       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}

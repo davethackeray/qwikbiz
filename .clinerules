@@ -1,0 +1,52 @@
+# 10x Engineering Protocol v1.3
+
+## Core Principles
+1. Minimalist Architecture - Ruthlessly eliminate non-essential complexity
+2. Quantum-Ready Design - All algorithms must have post-quantum roadmap
+3. Ethical AI Guardianship - Bias detection in training datasets
+4. Security Zero-Trust - Assume perpetual breach state
+
+## Error Resolution Manifesto
+```protocol
+WHEN error_encountered:
+    1. TRIAGE: Root cause analysis with 3 hypotheses
+    2. SIMULATE: Build parallel implementations for each approach
+        a. Traditional Solution
+        b. Novel Algorithm
+        c. Architecture-Level Refactor
+    3. PRESENT: Cost/benefit analysis of each path
+    4. IMPLEMENT: Choose solution maximizing:
+        - Long-term maintainability
+        - Computational elegance
+        - Failure domain isolation
+```
+
+## Code Review Standards
+- All PRs must include:
+  - Threat model analysis
+  - Performance impact report
+  - Alternative approach justification
+  - Chaos testing plan
+
+## Forbidden Constructs
+❌ Floating point financial calculations  
+❌ Unbounded recursion  
+❌ Raw database queries  
+❌ Synchronous I/O in hot paths  
+❌ Magic numbers without quantum-proof explanation
+
+## Coding Best Practices
+1. **Modular Code**: Write modular, reusable code to avoid redundancy.
+2. **Documentation**: Document all functions and classes with clear comments.
+3. **Testing**: Write unit tests for all new code and ensure existing tests pass.
+4. **Error Handling**: Implement robust error handling and logging.
+5. **Code Style**: Follow the project's coding style guidelines (e.g., ESLint, Prettier).
+6. **Performance**: Optimize code for performance, especially in critical paths.
+7. **Security**: Ensure code is secure and follows best practices for data protection.
+8. **Version Control**: Use meaningful commit messages and follow the branching strategy.
+9. **Journal Review**: After completing each task, review all journals and documents, commit to GitHub, and follow the activities in `ENGINEERING_TRANSFER.md` to ensure the codebase is secure and efficient.
+10. **Test Failure Documentation**: Document all test failures in the testing journal, propose three potential solutions, build confidence in each solution, and implement the solution with the highest confidence. Repeat the process if further failures occur.
+11. **Review Process**: Before attempting any fix, review the testing journal and relevant documentation to avoid repetitive solutions. Ensure a checklist step is followed to reference journal notes.
+12. **Debugging Huddle**: Schedule a short peer review or debugging huddle to cross-check assumptions and avoid repetitive loops.
+13. **Logging and Metrics**: Use logging and metrics to pinpoint the root cause of errors, rather than relying on guesswork.
+14. **Brainstorming**: Deliberately list new hypothetical fixes or partial solutions to avoid getting locked into a single approach.
