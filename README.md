@@ -1,124 +1,70 @@
-# BizSim - Business Simulation Dashboard
+# QwikBiz
 
-An interactive business simulation application that presents users with dynamic business scenarios, tracks their decisions, and provides real-time feedback through a comprehensive BI dashboard.
+A business simulation platform that leverages AI to generate dynamic business scenarios and solutions.
 
-## 📚 Documentation
+## Features
 
-### Core Documentation
-- [Architecture Documentation](docs/architecture/ARCHITECTURE.md) - System design and technical decisions
-- [Engineering Journal](docs/engineering/JOURNAL.md) - Development decisions and technical details
-- [Bug Fixes Log](docs/engineering/BUGFIXES.md) - Tracking and solutions for known issues
-- [Development Roadmap](docs/ROADMAP.md) - Project timeline and feature planning
+- Dynamic business scenario generation
+- Department performance analysis
+- AI-powered solution recommendations
+- Real-time metrics visualization
+- Special projects recommendations
 
-### Guides
-- [Quickstart Guide](docs/guides/QUICKSTART.md) - Getting started for new developers
+## Tech Stack
 
-## 🚀 Features
+- Next.js
+- TypeScript
+- Prisma
+- Docker
+- Gemini AI API
 
-- **Interactive Dashboard**
-  - Real-time KPI tracking
-  - Department performance metrics
-  - Live business news ticker
-  - Dynamic scenario management
+## Getting Started
 
-- **Business Scenarios**
-  - AI-generated business challenges
-  - Multiple solution paths
-  - Impact analysis for each decision
-  - Special Projects Team consultation
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd qwikbiz
+```
 
-- **Performance Tracking**
-  - User decision history
-  - Metric impact visualization
-  - Progress tracking
-  - Dynamic difficulty adjustment
+2. Install dependencies:
+```bash
+npm install
+```
 
-## 🛠 Tech Stack
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+```
+Then update the environment variables with your credentials.
 
-- **Frontend**
-  - Next.js 14 with App Router
-  - TypeScript
-  - TailwindCSS
-  - Chart.js for metrics visualization
+4. Start the development server:
+```bash
+npm run dev
+```
 
-- **Backend**
-  - Node.js with Express
-  - PostgreSQL with Prisma ORM
-  - WebSocket for real-time updates
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- **AI Integration**
-  - Google Gemini for scenario generation
-  - TheNews API for business updates
-
-## 🏁 Getting Started
-
-1. **Prerequisites**
-   ```bash
-   node.js >= 18
-   PostgreSQL
-   ```
-
-2. **Installation**
-   ```bash
-   # Install dependencies
-   npm install
-
-   # Set up environment variables
-   cp .env.example .env.local
-   # Add your API keys and configuration
-
-   # Start the development server
-   npm run dev
-   ```
-
-3. **Environment Variables**
-   ```
-   NEXT_PUBLIC_GEMINI_API_KEY="your-gemini-api-key"
-   NEXT_PUBLIC_NEWS_API_KEY="your-news-api-key"
-   DATABASE_URL="postgresql://user:password@localhost:5432/bizsim"
-   NEXTAUTH_SECRET="your-secret-key"
-   NEXTAUTH_URL="http://localhost:3000"
-   ```
-
-## 🧪 Development
+## Development
 
 - `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npx prisma studio` - Open Prisma database UI
+- `npm run build` - Build production version
+- `npm run start` - Start production server
+- `npm run lint` - Run linting
+- `npm run test` - Run tests
 
-## 📁 Project Structure
+## Environment Variables
 
-```
-.
-├── docs/                  # Documentation
-│   ├── architecture/     # System design docs
-│   ├── engineering/      # Technical docs
-│   └── guides/          # Developer guides
-├── src/
-│   ├── app/             # Next.js pages
-│   ├── components/      # React components
-│   ├── lib/            # Utilities and services
-│   └── types/          # TypeScript definitions
-└── prisma/              # Database schema
-```
+Required environment variables:
+- `NEXT_PUBLIC_GEMINI_API_KEY` - Google Gemini API key
 
-## 👥 Contributing
+## Contributing
 
-1. Check our [Development Roadmap](docs/ROADMAP.md)
-2. Follow our [Engineering Guidelines](docs/engineering/JOURNAL.md)
-3. Review the [Architecture Documentation](docs/architecture/ARCHITECTURE.md)
-4. Create a pull request
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 🐛 Bug Reporting
+## License
 
-Found a bug? Please:
-1. Check the [Bug Fixes Log](docs/engineering/BUGFIXES.md)
-2. Report new issues in our issue tracker
-3. Include steps to reproduce
-4. Provide relevant environment details
-
-## 📜 License
-
-MIT License - see LICENSE for details
+MIT License - see the [LICENSE](LICENSE) file for details
