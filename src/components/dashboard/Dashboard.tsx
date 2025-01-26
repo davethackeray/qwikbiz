@@ -176,8 +176,8 @@ export function Dashboard() {
   }, [fetchNews, generateScenario]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-900 text-white p-6 flex flex-col">
+      <div className="max-w-7xl mx-auto flex-grow pb-16">
         {/* Header */}
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Business Simulation Dashboard</h1>
@@ -229,9 +229,11 @@ export function Dashboard() {
             )}
           </div>
         </div>
+      </div>
 
-        {/* News Ticker */}
-        <div className="mt-6">
+      {/* News Ticker - Fixed to bottom */}
+      <div className="fixed bottom-0 left-0 right-0 w-full">
+        <div className="max-w-7xl mx-auto px-6">
           <NewsTicker news={news} />
         </div>
       </div>

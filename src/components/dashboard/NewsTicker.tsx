@@ -38,6 +38,10 @@ export function NewsTicker({ news, speed = 50 }: NewsTickerProps) {
   }, [speed]);
 
   useEffect(() => {
+    setItems(news);
+  }, [news]);
+
+  useEffect(() => {
     const cleanup = moveNews();
     return () => {
       if (cleanup) cleanup();
@@ -45,22 +49,22 @@ export function NewsTicker({ news, speed = 50 }: NewsTickerProps) {
   }, [moveNews]);
 
   return (
-    <div className="bg-gray-800 px-4 py-2 overflow-hidden" ref={containerRef}>
+    <div className="bg-gray-800/95 border-t border-gray-700 backdrop-blur-sm px-4 py-3 overflow-hidden shadow-lg" ref={containerRef}>
       <div className="whitespace-nowrap" ref={contentRef}>
         {items.map((item, index) => (
-          <span key={item.id} className="inline-block mx-4">
-            <span className="text-blue-400">{item.source}</span>
-            <span className="mx-2">|</span>
+          <span key={item.id} className="inline-block mx-4 text-sm">
+            <span className="text-blue-400 font-semibold">{item.source}</span>
+            <span className="mx-2 text-gray-500">|</span>
             <a
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-300 hover:text-white"
+              className="text-gray-300 hover:text-white transition-colors duration-200"
             >
               {item.title}
             </a>
             {index < items.length - 1 && (
-              <span className="mx-4 text-gray-600">•</span>
+              <span className="mx-4 text-gray-600">●</span>
             )}
           </span>
         ))}
