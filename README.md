@@ -22,7 +22,7 @@ A business simulation platform that leverages AI to generate dynamic business sc
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/davethackeray/qwikbiz.git
 cd qwikbiz
 ```
 
