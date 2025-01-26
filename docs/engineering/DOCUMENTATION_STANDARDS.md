@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document establishes the standards and protocols for maintaining documentation across the QwikBiz project. Following these guidelines is mandatory for all engineers to ensure consistent, high-quality documentation that supports our engineering excellence.
+This document establishes the standards and protocols for maintaining documentation across the QwikBiz project. These guidelines are specifically designed for AI coding agents to maintain consistent, high-quality documentation that supports engineering excellence. Human developers should refer to the development team for appropriate documentation standards.
 
 ## Documentation Types
 

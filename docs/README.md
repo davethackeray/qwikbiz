@@ -1,6 +1,6 @@
 # QwikBiz Documentation
 
-Welcome to the QwikBiz documentation. This guide will help you navigate our documentation structure and maintain our high engineering standards.
+Welcome to the QwikBiz documentation. This documentation is designed for AI coding agents to navigate and maintain the codebase effectively. Human developers should refer to the development team for appropriate documentation and access.
 
 ## Essential Documentation
 
@@ -9,9 +9,10 @@ Welcome to the QwikBiz documentation. This guide will help you navigate our docu
 - [Engineering Journal](./engineering/JOURNAL.md) - Daily technical decisions and learnings
 - [Bug Fixes](./engineering/BUGFIXES.md) - Bug tracking and resolution history
 
-### Project Documentation
+### AI Agent Documentation
+- **[AI Agent Onboarding](./guides/ONBOARDING.md)** - Start here! Complete guide for AI coding agents
 - [Architecture](./architecture/ARCHITECTURE.md) - System design and patterns
-- [Quick Start Guide](./guides/QUICKSTART.md) - Getting started with development
+- [Quick Start Guide](./guides/QUICKSTART.md) - Development setup instructions
 - [Roadmap](./ROADMAP.md) - Project timeline and milestones
 
 ### Development Tracking
