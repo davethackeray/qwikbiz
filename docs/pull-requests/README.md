@@ -70,6 +70,27 @@ interface SystemImpact {
    - Priority: High
    - Impact: Enhancement
    - Dependencies: PR-003
+   - Scoring:
+     - Business Value: 8.5
+     - Technical Viability: 7.0
+     - Strategic Fit: 8.5
+   - Decision: IMPLEMENT
+
+5. **PR-005: Smart News Filtering**
+   - Status: 🔄 Proposed
+   - Priority: 2
+   - Impact: Enhancement
+   - Dependencies: PR-002
+   - Scoring:
+     - Business Value: 8.5
+     - Technical Viability: 6.5
+     - Strategic Fit: 8.0
+   - Decision: IMPLEMENT
+   - Implementation Order: After PR-004
+   - Synergies:
+     - Complements AI Insights
+     - Enhances decision-making context
+     - Leverages existing news infrastructure
 
 ## Prioritization Rubrics
 
@@ -143,6 +164,8 @@ const priorityThresholds = {
 - [ ] Assess system impact
 - [ ] Review architecture documentation
 - [ ] Validate against ENGINEERING_RULES.md
+- [ ] Review icebox for potential consolidation
+- [ ] Check project roadmap alignment
 
 ### Post-Implementation
 - [ ] Complete testing requirements
@@ -150,6 +173,7 @@ const priorityThresholds = {
 - [ ] Update relevant documentation
 - [ ] Record lessons learned
 - [ ] Update PR index
+- [ ] Review icebox for unblocked features
 
 ## Testing Requirements
 
