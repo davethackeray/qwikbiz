@@ -1,4 +1,5 @@
 import { BusinessScenario, Solution } from "@/types/dashboard";
+import { GeminiResponse } from "@/types/api";
 
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro";
@@ -218,11 +219,12 @@ export async function generateBusinessScenario(context: BusinessContext): Promis
     const response = await callGeminiAPI(prompt);
     const scenarioData = JSON.parse(response);
 
+    const typedData = scenarioData as GeminiResponse;
     return {
       id: Math.random().toString(36).substr(2, 9),
-      description: scenarioData.description,
-      complexity: scenarioData.complexity,
-      solutions: scenarioData.solutions.map((sol: any) => ({
+      description: typedData.description,
+      complexity: typedData.complexity,
+      solutions: typedData.solutions.map((sol) => ({
         id: Math.random().toString(36).substr(2, 9),
         ...sol
       }))

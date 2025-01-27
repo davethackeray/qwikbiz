@@ -1,4 +1,5 @@
 import { NewsItem } from "@/types/dashboard";
+import { NewsApiResponse } from "@/types/api";
 
 const NEWS_API_KEY = process.env.NEXT_PUBLIC_NEWS_API_KEY;
 const NEWS_API_BASE_URL = "https://api.thenewsapi.com/v1/news/all";
@@ -13,9 +14,9 @@ export async function fetchBusinessNews(): Promise<NewsItem[]> {
       throw new Error("Failed to fetch news");
     }
 
-    const data = await response.json();
+    const data = await response.json() as NewsApiResponse;
     
-    return data.data.map((article: any) => ({
+    return data.data.map((article) => ({
       id: article.uuid,
       title: article.title,
       source: article.source,

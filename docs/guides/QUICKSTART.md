@@ -41,12 +41,37 @@ docker-compose up -d
 npx prisma migrate dev
 ```
 
+## Port Management
+
+The application automatically checks for and manages processes using required ports:
+- Port 3000: Next.js application
+- Port 5555: Prisma Studio
+
+When running `npm run build` or `npm start`, the system will:
+1. Check for processes using these ports
+2. Prompt to kill any existing processes
+3. Ensure clean port availability before proceeding
+
+If you encounter port conflicts, the system will:
+1. Display the process using the port (PID and command)
+2. Ask if you want to terminate the process
+3. Handle the termination safely
+
+## Troubleshooting Port Issues
+
+If you encounter port-related issues:
+1. Check running processes manually: `lsof -i :3000` or `lsof -i :5555`
+2. Kill processes manually if needed: `kill -9 <PID>`
+3. Run the build/start command again
+
 ## Development Server
 
 1. **Start the Development Server**
 ```bash
 npm run dev
 ```
+
+Note: The development server will automatically handle port availability on startup.
 The application will be available at http://localhost:3000
 
 2. **View Database UI (Optional)**

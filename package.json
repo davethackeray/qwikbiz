@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "node scripts/prebuild.js",
     "build": "next build",
+    "prestart": "node scripts/prebuild.js",
     "start": "next start",
     "lint": "next lint"
   },
@@ -30,6 +32,7 @@
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
     "prisma": "^6.2.1",
+    "ps-node": "^0.1.6",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

@@ -4,7 +4,7 @@ import { BusinessScenario, Solution } from "@/types/dashboard";
 import { Fragment } from "react";
 
 interface ScenarioSectionProps {
-  scenario: BusinessScenario;
+  scenario: BusinessScenario | null;
   onSelectSolution: (solution: Solution) => void;
   onSpecialProjects: () => void;
   loading?: boolean;
@@ -16,6 +16,14 @@ export function ScenarioSection({
   onSpecialProjects,
   loading = false,
 }: ScenarioSectionProps) {
+  if (!scenario) {
+    return (
+      <div className="bg-gray-800 rounded-lg p-6 text-center">
+        <span className="text-gray-400">No scenario available</span>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-800 rounded-lg p-6">
       <div className="mb-6">

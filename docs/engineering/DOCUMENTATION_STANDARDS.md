@@ -107,7 +107,22 @@ Location: `/docs/engineering/BUGFIXES.md`
 
 ## Quality Standards
 
-### 1. Content Requirements
+### 1. Port Management Standards
+- Document all ports used by the application components
+- Include port conflict resolution procedures
+- Define port-related error handling standards
+- Maintain port usage documentation up-to-date
+- Use prebuild scripts for automated port management
+
+Port Usage Documentation Format:
+```markdown
+| Port | Service | Environment | Notes |
+|------|---------|------------|-------|
+| 3000 | Next.js | All | Main application server |
+| 5555 | Prisma Studio | Development | Database management UI |
+```
+
+### 2. Content Requirements
 - Clear and concise language
 - Technical accuracy
 - Code examples where relevant
