@@ -1,196 +1,253 @@
-# BizSim Quickstart Guide
+# Quick Start Guide
 
-This guide will help you get the BizSim business simulation dashboard up and running in your local development environment.
-
-## Prerequisites
-
-- Node.js >= 18
-- PostgreSQL >= 14
-- Git
-- npm or yarn
-
-## Environment Setup
-
-1. **Clone the Repository**
-```bash
-git clone [repository-url]
-cd qwikbiz
-```
-
-2. **Install Dependencies**
-```bash
-npm install
-```
-
-3. **Environment Variables**
-Create a `.env.local` file in the root directory:
-```env
-NEXT_PUBLIC_GEMINI_API_KEY="your-gemini-api-key"
-NEXT_PUBLIC_NEWS_API_KEY="your-news-api-key"
-DATABASE_URL="postgresql://user:password@localhost:5432/bizsim"
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-```
-
-4. **Database Setup**
-```bash
-# Start PostgreSQL
-docker-compose up -d
-
-# Run migrations
-npx prisma migrate dev
-```
-
-## Port Management
-
-The application automatically checks for and manages processes using required ports:
-- Port 3000: Next.js application
-- Port 5555: Prisma Studio
-
-When running `npm run build` or `npm start`, the system will:
-1. Check for processes using these ports
-2. Prompt to kill any existing processes
-3. Ensure clean port availability before proceeding
-
-If you encounter port conflicts, the system will:
-1. Display the process using the port (PID and command)
-2. Ask if you want to terminate the process
-3. Handle the termination safely
-
-## Troubleshooting Port Issues
-
-If you encounter port-related issues:
-1. Check running processes manually: `lsof -i :3000` or `lsof -i :5555`
-2. Kill processes manually if needed: `kill -9 <PID>`
-3. Run the build/start command again
-
-## Development Server
-
-1. **Start the Development Server**
-```bash
-npm run dev
-```
-
-Note: The development server will automatically handle port availability on startup.
-The application will be available at http://localhost:3000
-
-2. **View Database UI (Optional)**
-```bash
-npx prisma studio
-```
-Access the Prisma Studio interface at http://localhost:5555
+This guide will help you understand the BizSim project structure and get started with development.
 
 ## Project Structure
 
+BizSim follows atomic design principles, organizing components into a clear hierarchy:
+
 ```
 src/
-  ├── app/              # Next.js pages and layouts
-  ├── components/       # React components
-  │   └── dashboard/    # Dashboard-specific components
-  ├── lib/             # Utility functions and services
-  │   ├── services/    # API services
-  │   └── utils/       # Helper functions
-  ├── types/           # TypeScript definitions
-  └── prisma/          # Database schema and migrations
+├── components/            # Component library
+│   ├── atoms/            # Basic building blocks
+│   │   ├── Button
+│   │   └── LoadingSpinner
+│   ├── molecules/        # Simple combinations
+│   │   ├── cards/
+│   │   │   ├── KPICard
+│   │   │   └── SolutionCard
+│   │   ├── NewsItem
+│   │   └── ProgressBar
+│   ├── organisms/        # Complex components
+│   │   └── sections/
+│   │       ├── DepartmentSlider
+│   │       ├── NewsTicker
+│   │       └── ScenarioSection
+│   └── templates/        # Page layouts
+│       └── dashboard/
+│           └── DashboardTemplate
+├── hooks/                # Custom React hooks
+├── lib/
+│   ├── constants/        # Application constants
+│   └── services/         # External service integrations
+├── types/                # TypeScript definitions
+└── app/                  # Next.js pages
 ```
-
-## Key Components
-
-### Dashboard Components
-- `Dashboard.tsx` - Main dashboard container
-- `KPICard.tsx` - Individual KPI display
-- `DepartmentSlider.tsx` - Department metrics
-- `ScenarioSection.tsx` - Business scenario display
-- `NewsTicker.tsx` - Real-time news feed
-
-### Services
-- `ai.ts` - Google Gemini API integration
-- `news.ts` - TheNews API integration
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run test` - Run tests (when implemented)
-
-## API Integration
-
-### Google Gemini API
-The AI service (`src/lib/services/ai.ts`) handles:
-- Scenario generation
-- Solution impact analysis
-- Special projects recommendations
-
-### TheNews API
-The news service (`src/lib/services/news.ts`) handles:
-- Real-time business news fetching
-- News filtering and formatting
 
 ## Development Workflow
 
-1. **Feature Development**
-   - Create a new branch: `feature/your-feature-name`
-   - Implement changes
-   - Add tests if necessary
-   - Create a pull request
+### 1. Setting Up Your Environment
 
-2. **Testing**
-   - Run linting: `npm run lint`
-   - Run tests: `npm run test`
-   - Test in development: `npm run dev`
-
-3. **Database Changes**
-   - Update schema in `prisma/schema.prisma`
-   - Run `npx prisma migrate dev --name your-migration-name`
-   - Test migrations locally
-
-## Common Issues and Solutions
-
-### Database Connection Issues
 ```bash
-# Reset database
-docker-compose down -v
-docker-compose up -d
-npx prisma migrate reset
+# Clone the repository
+git clone https://github.com/yourusername/qwikbiz.git
+cd qwikbiz
+
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+
+# Set up the database
+npx prisma migrate dev
+
+# Start development server
+npm run dev
 ```
 
-### API Rate Limiting
-- Implement caching for frequent requests
-- Use exponential backoff for retries
+### 2. Creating New Components
 
-### Next.js Build Errors
-- Clear `.next` directory: `rm -rf .next`
-- Clean install dependencies: `rm -rf node_modules && npm install`
+Follow the atomic design methodology when creating new components:
+
+#### Atoms (Basic Building Blocks)
+```typescript
+// src/components/atoms/Button.tsx
+export interface ButtonProps {
+  // Define props
+}
+
+export const Button: React.FC<ButtonProps> = ({ children, ...props }) => {
+  return (
+    <button {...props}>
+      {children}
+    </button>
+  );
+};
+```
+
+#### Molecules (Combinations of Atoms)
+```typescript
+// src/components/molecules/cards/DataCard.tsx
+import { Button } from '../../atoms';
+
+export const DataCard: React.FC<DataCardProps> = ({ title, data }) => {
+  return (
+    <div className="card">
+      <h3>{title}</h3>
+      <div>{data}</div>
+      <Button>Action</Button>
+    </div>
+  );
+};
+```
+
+#### Organisms (Complex Components)
+```typescript
+// src/components/organisms/sections/DataSection.tsx
+import { DataCard } from '../../molecules';
+
+export const DataSection: React.FC = () => {
+  return (
+    <section>
+      <DataCard title="Revenue" data={revenueData} />
+      <DataCard title="Growth" data={growthData} />
+    </section>
+  );
+};
+```
+
+### 3. Using Custom Hooks
+
+```typescript
+import { useDashboard } from '@/hooks/useDashboard';
+
+const YourComponent = () => {
+  const [
+    { kpis, departments, news },
+    { handleSolutionSelect }
+  ] = useDashboard();
+
+  return (
+    // Your component JSX
+  );
+};
+```
+
+### 4. Error Handling
+
+Always wrap components with error boundaries:
+
+```typescript
+import { ErrorBoundary } from '@/components';
+
+const YourComponent = () => {
+  return (
+    <ErrorBoundary>
+      {/* Your component content */}
+    </ErrorBoundary>
+  );
+};
+```
+
+### 5. Loading States
+
+Implement loading states for async operations:
+
+```typescript
+const YourComponent = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return (
+    // Your component content
+  );
+};
+```
+
+### 6. Component Documentation
+
+Document your components using JSDoc comments:
+
+```typescript
+/**
+ * Component description
+ * @example
+ * <YourComponent
+ *   prop1="value"
+ *   prop2={42}
+ * />
+ */
+export interface YourComponentProps {
+  /** Description of prop1 */
+  prop1: string;
+  /** Description of prop2 */
+  prop2: number;
+}
+```
 
 ## Best Practices
 
-1. **Code Style**
-   - Follow ESLint configurations
-   - Use TypeScript strict mode
-   - Document complex functions
-
-2. **Component Structure**
+1. **Component Organization**
+   - Place components in appropriate atomic design categories
+   - Use index files for clean exports
    - Keep components focused and single-responsibility
-   - Use proper type definitions
-   - Implement error boundaries
 
-3. **State Management**
-   - Use React hooks effectively
+2. **State Management**
+   - Use custom hooks for complex logic
+   - Keep state close to where it's used
    - Implement proper cleanup in useEffect
-   - Optimize rerenders with useMemo/useCallback
 
-## Getting Help
+3. **Styling**
+   - Use Tailwind CSS utility classes
+   - Follow responsive design principles
+   - Maintain consistent spacing and layout
 
-- Check the Engineering Journal in `docs/engineering/JOURNAL.md`
-- Review the architecture documentation in `docs/architecture/`
-- Consult the codebase roadmap in project documentation
+4. **Testing**
+   - Write unit tests for components
+   - Test error states and edge cases
+   - Mock external dependencies
 
-## Next Steps
+5. **Performance**
+   - Implement proper memoization
+   - Use lazy loading when appropriate
+   - Optimize re-renders
 
-After getting the basic setup running:
-1. Review the complete documentation
-2. Understand the architecture
-3. Set up your IDE with recommended extensions
-4. Join the development discussion
+## Common Tasks
+
+### Adding a New Feature
+
+1. Plan the component hierarchy
+2. Create necessary atomic components
+3. Implement custom hooks if needed
+4. Add TypeScript interfaces
+5. Write tests
+6. Update documentation
+
+### Modifying Existing Components
+
+1. Review the component's current implementation
+2. Make changes following atomic design principles
+3. Update tests and documentation
+4. Test thoroughly
+5. Submit a pull request
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Component Not Rendering**
+   - Check error boundaries
+   - Verify prop types
+   - Check for runtime errors
+
+2. **State Updates Not Working**
+   - Verify hook dependencies
+   - Check state update logic
+   - Ensure proper cleanup
+
+3. **Type Errors**
+   - Review TypeScript interfaces
+   - Check import paths
+   - Verify prop types
+
+## Additional Resources
+
+- [Architecture Documentation](../architecture/ARCHITECTURE.md)
+- [Engineering Rules](../engineering/ENGINEERING_RULES.md)
+- [Component Standards](../engineering/DOCUMENTATION_STANDARDS.md)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)

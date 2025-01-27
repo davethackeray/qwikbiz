@@ -23,22 +23,35 @@ graph TB
 
 ### 1. Frontend Architecture
 
+The frontend follows atomic design principles, organizing components into a clear hierarchy:
+
 #### Component Hierarchy
 ```
-Dashboard
-├── KPISection
-│   └── KPICard
-├── DepartmentSection
-│   └── DepartmentSlider
-├── ScenarioSection
-│   └── SolutionCards
-└── NewsTicker
+src/components/
+├── atoms/          # Basic building blocks
+│   ├── Button
+│   └── LoadingSpinner
+├── molecules/      # Simple combinations of atoms
+│   ├── cards/
+│   │   ├── KPICard
+│   │   └── SolutionCard
+│   ├── NewsItem
+│   └── ProgressBar
+├── organisms/      # Complex components
+│   └── sections/
+│       ├── DepartmentSlider
+│       ├── NewsTicker
+│       └── ScenarioSection
+└── templates/      # Page-level layouts
+    └── dashboard/
+        └── DashboardTemplate
 ```
 
 #### State Management
+- Custom hooks for business logic (useDashboard)
 - Local component state for UI interactions
-- React Context for global state
-- Optimistic updates for real-time feedback
+- Error boundaries for error handling
+- Loading states and optimistic updates
 
 ### 2. Backend Services
 
@@ -60,7 +73,7 @@ interface NewsService {
 }
 ```
 
-### 3. Database Architecture
+### 3. Data Model (Prisma Schema)
 
 #### Entity Relationship Diagram
 ```mermaid
@@ -72,200 +85,145 @@ erDiagram
     UserDecision }|--|| Solution : chooses
 ```
 
-#### Key Tables
-- Users & Authentication
-- Business Metrics & KPIs
-- Scenarios & Solutions
-- Historical Decisions
+### 4. Component Design Patterns
 
-### 4. Real-time Updates
-
-#### WebSocket Implementation
+#### Error Handling
 ```typescript
-interface WebSocketService {
-  connect(): void
-  subscribeToMetrics(callback: (metrics: Metrics) => void): void
-  subscribeToNews(callback: (news: NewsItem) => void): void
-  unsubscribe(topic: string): void
+// Global error boundary
+<ErrorBoundary>
+  <Component />
+</ErrorBoundary>
+
+// Component-level error states
+if (error) {
+  return <ErrorState message={error.message} />;
 }
 ```
 
-## Technical Decisions
+#### Loading States
+```typescript
+// Skeleton loading
+if (isLoading) {
+  return <SkeletonLoader />;
+}
+
+// Progress indicators
+<LoadingSpinner size={20} text="Processing..." />
+```
+
+#### Accessibility
+- ARIA labels and roles
+- Keyboard navigation
+- Screen reader support
+- Color contrast compliance
+
+### 5. Custom Hooks
+
+Custom hooks encapsulate complex business logic and state management:
+
+```typescript
+// Dashboard state management
+const [
+  { kpis, departments, news, scenario },
+  { handleSolutionSelect, handleSpecialProjects }
+] = useDashboard();
+
+// Component-specific hooks
+const { data, loading, error } = useNewsStream();
+```
+
+## Technical Stack
 
 ### 1. Framework Selection
 
 #### Next.js 14
-- **Pros**:
-  - Server-side rendering
-  - API routes
-  - TypeScript support
-  - File-based routing
-- **Cons**:
-  - Learning curve
-  - Build complexity
-  - Deployment considerations
+- Server-side rendering
+- API routes
+- TypeScript support
+- File-based routing
 
-### 2. Database Choice
+### 2. UI Components
+- Atomic design structure
+- Tailwind CSS for styling
+- Component documentation
+- Accessibility patterns
 
-#### PostgreSQL
-- **Pros**:
-  - ACID compliance
-  - JSON support
-  - Complex queries
-  - Prisma integration
-- **Cons**:
-  - Setup complexity
-  - Resource usage
-  - Scaling considerations
-
-### 3. AI Integration
-
-#### Google Gemini
-- **Pros**:
-  - Advanced language model
-  - Structured output
-  - Context awareness
-- **Cons**:
-  - Cost considerations
-  - Rate limiting
-  - Response time variability
-
-## Performance Optimizations
-
-### 1. Caching Strategy
+### 3. Performance Optimizations
 
 #### Client-side Cache
+- Real-time data caching
+- Component memoization
+- Optimistic updates
+
+#### Loading Strategy
+- Progressive loading
+- Skeleton interfaces
+- Suspense boundaries
+
+## Testing Strategy
+
+### 1. Component Testing
 ```typescript
-interface CacheConfig {
-  maxAge: number
-  staleWhileRevalidate: boolean
-  cachePriority: 'high' | 'low'
-}
+describe('Component', () => {
+  // Render tests
+  it('renders successfully', () => {});
+
+  // Interaction tests
+  it('handles user interactions', () => {});
+
+  // State tests
+  it('manages state correctly', () => {});
+});
 ```
 
-#### Server-side Cache
-- Redis for session data
-- Memory cache for AI responses
-- Database query cache
-
-### 2. Loading States
-
-#### Progressive Loading
+### 2. Hook Testing
 ```typescript
-interface LoadingState {
-  isLoading: boolean
-  progress: number
-  stage: 'initial' | 'data' | 'complete'
-}
+import { renderHook } from '@testing-library/react-hooks';
+
+describe('useHook', () => {
+  it('manages state correctly', () => {
+    const { result } = renderHook(() => useHook());
+    expect(result.current).toBeDefined();
+  });
+});
 ```
-
-## Security Architecture
-
-### 1. Authentication Flow
-
-```mermaid
-sequenceDiagram
-    Client->>Auth: Login Request
-    Auth->>Database: Verify Credentials
-    Database->>Auth: User Data
-    Auth->>Client: JWT Token
-```
-
-### 2. API Security
-
-#### Rate Limiting
-```typescript
-interface RateLimitConfig {
-  windowMs: number
-  max: number
-  keyGenerator: (req: Request) => string
-}
-```
-
-#### Input Validation
-- JSON Schema validation
-- TypeScript type checking
-- Runtime type checking
-- XSS protection
-
-## Deployment Architecture
-
-### 1. Development Environment
-```mermaid
-graph LR
-    Dev[Local Dev] --> Git
-    Git --> CI[CI/CD]
-    CI --> Test
-    Test --> Stage
-    Stage --> Prod
-```
-
-### 2. Production Environment
-- Container orchestration
-- Load balancing
-- Auto-scaling
-- Health monitoring
-
-## Error Handling
-
-### 1. Error Types
-```typescript
-type ErrorType = 
-  | 'ValidationError'
-  | 'NetworkError'
-  | 'AIError'
-  | 'DatabaseError'
-  | 'AuthenticationError'
-```
-
-### 2. Error Recovery
-- Retry mechanisms
-- Fallback states
-- User feedback
-- Error logging
-
-## Monitoring and Logging
-
-### 1. Metrics Collection
-- Performance metrics
-- User interactions
-- Error rates
-- API response times
-
-### 2. Logging Strategy
-- Structured logging
-- Log levels
-- Log aggregation
-- Alert thresholds
 
 ## Future Considerations
 
 ### 1. Scaling Strategy
-- Horizontal scaling
-- Database sharding
-- Caching layers
-- Load balancing
+- Component reusability
+- Performance monitoring
+- Bundle optimization
+- Code splitting
 
 ### 2. Feature Extensions
-- Machine learning integration
 - Advanced analytics
-- Real-world data integration
-- Mobile application
+- Real-time collaboration
+- Mobile responsiveness
+- Offline support
 
 ## Development Guidelines
 
-### 1. Code Organization
-- Feature-based structure
-- Shared utilities
-- Type definitions
-- Service abstractions
+### 1. Component Development
+- Follow atomic design principles
+- Implement error boundaries
+- Include loading states
+- Write unit tests
 
-### 2. Testing Strategy
-- Unit tests
-- Integration tests
-- E2E tests
-- Performance testing
+### 2. Code Quality
+- TypeScript for type safety
+- ESLint for code style
+- Prettier for formatting
+- Jest for testing
+
+### 3. Documentation
+- Component documentation
+- Code comments
+- Type definitions
+- Usage examples
 
 ## Conclusion
 
 This architecture provides a robust foundation for the BizSim platform while maintaining flexibility for future enhancements and scale. Regular reviews and updates to this document should be performed as the system evolves.
+
+Last updated: January 27, 2025

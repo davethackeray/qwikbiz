@@ -1,5 +1,8 @@
-import { Dashboard } from "@/components/dashboard/Dashboard";
+import { DashboardTemplate } from '@/components/templates/dashboard/DashboardTemplate';
 
+/**
+ * Main page component renders the dashboard template
+ */
 export default function Home() {
-  return <Dashboard />;
+  return <DashboardTemplate />;
 }
