@@ -6,3 +6,6 @@ export type { NewsTickerProps } from './NewsTicker';
 
 export { ScenarioSection } from './ScenarioSection';
 export type { ScenarioSectionProps } from './ScenarioSection';
+
+export { InsightsPanel } from './InsightsPanel';
+export type { InsightsPanelProps } from './InsightsPanel';

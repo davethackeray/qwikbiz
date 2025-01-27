@@ -1,12 +1,10 @@
 "use client";
 
 import React from 'react';
-import { ErrorBoundary } from '../../ErrorBoundary';
-import { LoadingSpinner } from '../../atoms/LoadingSpinner';
-import { KPICard } from '../../molecules/cards/KPICard';
-import { DepartmentSlider } from '../../organisms/sections/DepartmentSlider';
-import { NewsTicker } from '../../organisms/sections/NewsTicker';
-import { ScenarioSection } from '../../organisms/sections/ScenarioSection';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { LoadingSpinner } from '@/components/atoms';
+import { KPICard } from '@/components/molecules';
+import { DepartmentSlider, NewsTicker, ScenarioSection, InsightsPanel } from '@/components/organisms/sections';
 import { useDashboard } from '@/hooks/useDashboard';
 
 /**
@@ -71,23 +69,35 @@ export const DashboardTemplate: React.FC = () => {
                 ))}
               </section>
 
-              {/* Active Scenario */}
-              <section className="relative">
-                {loading && (
-                  <div className="absolute inset-0 bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <LoadingSpinner size={20} text="Loading scenario..." />
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-2 gap-6">
+                {/* Active Scenario */}
+                <section className="relative">
+                  {loading && (
+                    <div className="absolute inset-0 bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <LoadingSpinner size={20} text="Loading scenario..." />
+                      </div>
                     </div>
-                  </div>
-                )}
-                <ScenarioSection
-                  scenario={scenario}
-                  onSelectSolution={handleSolutionSelect}
-                  onSpecialProjects={handleSpecialProjects}
-                  loading={loading}
-                  error={error ? new Error(error) : undefined}
+                  )}
+                  <ScenarioSection
+                    scenario={scenario}
+                    onSelectSolution={handleSolutionSelect}
+                    onSpecialProjects={handleSpecialProjects}
+                    loading={loading}
+                    error={error ? new Error(error) : undefined}
+                  />
+                </section>
+
+                {/* Smart Insights Panel */}
+                <InsightsPanel
+                  contextData={{
+                    kpis,
+                    departments,
+                    scenario
+                  }}
                 />
-              </section>
+              </div>
             </main>
           </div>
         </div>
