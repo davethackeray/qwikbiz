@@ -1,9 +1,9 @@
 # Pull Requests & Feature Implementation Index
 
-## Implementation Order
+## Current Implementation Plan
 
 ```typescript
-interface ImplementationPlan {
+interface EnhancedImplementationPlan {
   phase1: {
     feature: "Authentication System";
     pr: "PR-006";
@@ -11,16 +11,23 @@ interface ImplementationPlan {
     blockers: [];
   };
   phase2: {
+    feature: "Special Projects Suite";
+    pr: "PR-011";
+    status: "Ready";
+    subFeatures: [
+      "ROI Tracker",
+      "Crisis Simulation",
+      "Leadership Mode",
+      "Collaboration Metrics",
+      "Innovation Pipeline"
+    ];
+    blockers: ["PR-006"];
+  };
+  phase3: {
     feature: "Dynamic Roadmap + User Onboarding";
     pr: ["PR-007", "PR-010"];
     status: "Consolidated";
     blockers: ["PR-006"];
-  };
-  phase3: {
-    feature: "Special Projects Cards";
-    pr: "PR-008";
-    status: "Ready";
-    blockers: [];
   };
   phase4: {
     feature: "AI Insights Generator";
@@ -33,6 +40,45 @@ interface ImplementationPlan {
     pr: "PR-005";
     status: "Ready";
     blockers: ["PR-004"];
+  };
+}
+```
+
+## Enhanced Prioritization System
+
+```typescript
+interface EnhancedPrioritizationRubric {
+  businessValue: {
+    revenue: number;        // 1-10
+    userSatisfaction: number; // 1-10
+    marketAdvantage: number;  // 1-10
+    educationalImpact: number; // 1-10
+  };
+  technicalFactors: {
+    complexity: number;     // 1-10
+    risk: number;          // 1-10
+    maintenance: number;    // 1-10
+    scalability: number;    // 1-10
+  };
+  strategicAlignment: {
+    roadmapFit: number;    // 1-10
+    innovationLevel: number; // 1-10
+    competitiveEdge: number; // 1-10
+  };
+  coreValueAlignment: {
+    businessSimulation: number;   // 1-10
+    educationalImpact: number;    // 1-10
+    specialProjectsValue: number; // 1-10
+  };
+  consolidationPotential: {
+    featureOverlap: number;      // 1-10
+    resourceOptimization: number; // 1-10
+    integrationEfficiency: number;// 1-10
+  };
+  marketDifferentiation: {
+    uniqueValue: number;         // 1-10
+    competitiveAdvantage: number;// 1-10
+    innovationLevel: number;     // 1-10
   };
 }
 ```
@@ -63,23 +109,20 @@ interface ImplementationPlan {
      - Performance: <100ms render
      - Accessibility: WCAG 2.1 AA
 
-4. **PR-004: AI Insights Generator**
-   - Status: 🔄 Ready
-   - Priority: 1
-   - Impact: Enhancement
-   - Score: 8.03
-   - Dependencies: PR-003
-   - Implementation: Phase 4
+4. **PR-011: Special Projects Suite**
+   - Status: 🔥 High Priority
+   - Impact: Core Enhancement
+   - Score: 8.97
+   - Components:
+     - ROI Tracker
+     - Crisis Simulation
+     - Leadership Mode
+     - Collaboration Metrics
+     - Innovation Pipeline
+   - Implementation: Phase 2
+   - Dependencies: PR-006
 
-5. **PR-005: Smart News Filtering**
-   - Status: 🔄 Ready
-   - Priority: 2
-   - Impact: Enhancement
-   - Score: 7.67
-   - Dependencies: PR-004
-   - Implementation: Phase 5
-
-6. **PR-006: Authentication System**
+5. **PR-006: Authentication System**
    - Status: 🔄 Ready
    - Priority: 1
    - Impact: Infrastructure
@@ -87,7 +130,7 @@ interface ImplementationPlan {
    - Dependencies: None
    - Implementation: Phase 1
 
-7. **PR-007 & PR-010: Enhanced User Experience**
+6. **PR-007 & PR-010: Enhanced User Experience**
    - Status: 🔄 Consolidated
    - Priority: 2
    - Impact: Enhancement
@@ -96,15 +139,23 @@ interface ImplementationPlan {
      - Dynamic Roadmap
      - User Onboarding
    - Dependencies: PR-006
-   - Implementation: Phase 2
+   - Implementation: Phase 3
 
-8. **PR-008: Special Projects Cards**
+7. **PR-004: AI Insights Generator**
+   - Status: 🔄 Ready
+   - Priority: 1
+   - Impact: Enhancement
+   - Score: 8.03
+   - Dependencies: PR-003
+   - Implementation: Phase 4
+
+8. **PR-005: Smart News Filtering**
    - Status: 🔄 Ready
    - Priority: 2
    - Impact: Enhancement
-   - Score: 7.47
-   - Dependencies: None
-   - Implementation: Phase 3
+   - Score: 7.67
+   - Dependencies: PR-004
+   - Implementation: Phase 5
 
 9. **PR-009: Dark Mode Toggle**
    - Status: ❄️ Iceboxed
@@ -112,56 +163,70 @@ interface ImplementationPlan {
    - Rationale: Below threshold
    - Reconsider: After core features
 
-## Feature Status Overview
+## Implementation Timeline
 
 ```typescript
-interface FeatureStatus {
-  implemented: number;  // 3
-  ready: number;       // 4
-  consolidated: number; // 2
-  iceboxed: number;    // 1
-  total: number;       // 10
-}
-
-interface PriorityDistribution {
-  priority1: number;  // 2
-  priority2: number;  // 4
-  priority3: number;  // 0
-  iceboxed: number;  // 1
+interface UpdatedTimeline {
+  phase1: {
+    duration: "4 weeks";
+    feature: "Authentication System";
+  };
+  phase2: {
+    duration: "8 weeks";
+    feature: "Special Projects Suite";
+    subphases: [
+      "Foundation - 3 weeks",
+      "Simulation - 3 weeks",
+      "Innovation - 2 weeks"
+    ];
+  };
+  phase3: {
+    duration: "4 weeks";
+    feature: "Enhanced User Experience";
+  };
+  phase4: {
+    duration: "3 weeks";
+    feature: "AI Insights Generator";
+  };
+  phase5: {
+    duration: "3 weeks";
+    feature: "Smart News Filtering";
+  };
+  total: "22 weeks";
 }
 ```
 
-## Implementation Metrics
+## Resource Requirements
 
-1. Required Resources:
-   - Frontend: 2 developers
-   - Backend: 1 developer
-   - QA: 1 engineer
-   - Design: 1 designer
+1. Development Team:
+   - 2 Frontend Developers
+   - 1 Backend Developer
+   - 1 AI/ML Engineer
+   - 1 UX Designer
+   - 1 QA Engineer
 
-2. Timeline:
-   - Phase 1: 4 weeks
-   - Phase 2: 4 weeks
-   - Phase 3: 2 weeks
-   - Phase 4: 3 weeks
-   - Phase 5: 3 weeks
-   - Total: 16 weeks
+2. Infrastructure:
+   - Authentication System
+   - Analytics Platform
+   - AI Services
+   - Real-time Infrastructure
 
-3. Dependencies:
-   - Authentication required for Phase 2+
-   - AI services for Phase 4+
-   - Analytics integration throughout
+3. Timeline Factors:
+   - Sequential dependencies
+   - Integration points
+   - Testing requirements
+   - User feedback cycles
 
 ## Engineer Checklist
 
 ### Pre-Implementation
 - [ ] Review PR index
 - [ ] Check prioritization rubrics
-- [ ] Assess system impact
-- [ ] Review architecture docs
+- [ ] Assess consolidation opportunities
+- [ ] Review system impact
 - [ ] Validate against rules
-- [ ] Review icebox for consolidation
 - [ ] Check roadmap alignment
+- [ ] Review dependencies
 
 ### Post-Implementation
 - [ ] Complete testing
@@ -169,37 +234,8 @@ interface PriorityDistribution {
 - [ ] Update documentation
 - [ ] Record lessons
 - [ ] Update PR index
-- [ ] Review icebox
-
-## Testing Requirements
-
-```typescript
-interface TestingRequirements {
-  unit: {
-    coverage: number;      // Min 90%
-    assertions: string[];
-    edgeCases: string[];
-  };
-  integration: {
-    scenarios: string[];
-    systemChecks: string[];
-  };
-  performance: {
-    metrics: MetricThresholds;
-    loadTests: string[];
-  };
-  accessibility: {
-    wcag: string;         // Min WCAG 2.1 AA
-    screenReader: boolean;
-    keyboard: boolean;
-  };
-  security: {
-    scanning: string[];
-    penetration: string[];
-    compliance: string[];
-  };
-}
-```
+- [ ] Review consolidation success
+- [ ] Update metrics
 
 ## Documentation Updates
 
@@ -209,16 +245,18 @@ After each implementation:
    - Architecture changes
    - New patterns
    - Performance impact
-   - Security updates
+   - Security implications
+   - Consolidation outcomes
 
 2. Record system impact:
    - Dependencies
    - API changes
    - Database updates
    - Infrastructure needs
+   - Integration points
 
 3. Capture lessons:
-   - Challenges
-   - Solutions
-   - Future needs
-   - Optimizations
+   - Technical challenges
+   - Consolidation benefits
+   - Future opportunities
+   - Optimization insights
