@@ -1,116 +1,109 @@
-"use client";
+'use client';
 
 import React from 'react';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { LoadingSpinner } from '@/components/atoms';
-import { KPICard } from '@/components/molecules';
-import { DepartmentSlider, NewsTicker, ScenarioSection, InsightsPanel } from '@/components/organisms/sections';
+import { useAuth } from '@/context/AuthContext';
 import { useDashboard } from '@/hooks/useDashboard';
+import { DepartmentSlider } from '@/components/organisms/sections/DepartmentSlider';
+import { NewsTicker } from '@/components/organisms/sections/NewsTicker';
+import { ScenarioSection } from '@/components/organisms/sections/ScenarioSection';
+import { InsightsPanel } from '@/components/organisms/sections/InsightsPanel';
+import { LoadingSpinner } from '@/components/atoms/LoadingSpinner';
 
-/**
- * DashboardTemplate is the main page template for the business simulation dashboard
- */
-export const DashboardTemplate: React.FC = () => {
+interface DashboardTemplateProps {
+  user: {
+    name: string;
+    email: string;
+    imageUrl?: string;
+  };
+}
+
+export function DashboardTemplate({ user }: DashboardTemplateProps) {
+  const { signOut } = useAuth();
   const [
     { kpis, departments, news, scenario, loading, error },
     { handleSolutionSelect, handleSpecialProjects }
   ] = useDashboard();
 
-  return (
-    <ErrorBoundary>
-      <div 
-        className="min-h-screen bg-gray-900 text-white p-6 flex flex-col"
-        role="main"
-        aria-label="Business Simulation Dashboard"
-      >
-        <div className="max-w-7xl mx-auto flex-grow pb-16">
-          {/* Header */}
-          <header className="mb-8">
-            <h1 className="text-3xl font-bold">Business Simulation Dashboard</h1>
-            {error && (
-              <div 
-                className="mt-4 p-4 bg-red-900/50 text-red-200 rounded-lg"
-                role="alert"
-                aria-live="polite"
-              >
-                {error}
-              </div>
-            )}
-          </header>
+  // Convert error string to Error object if needed
+  const errorObj = error ? new Error(error) : undefined;
 
-          <div className="grid grid-cols-12 gap-6">
-            {/* Left Column - Department Sliders */}
-            <aside 
-              className="col-span-3 space-y-6"
-              aria-label="Department Metrics"
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* Header */}
+      <header className="bg-gray-800 shadow-md">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-xl font-bold">BizSim Dashboard</h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            {user.imageUrl && (
+              <img
+                src={user.imageUrl}
+                alt={user.name}
+                className="w-8 h-8 rounded-full"
+              />
+            )}
+            <div className="text-sm">
+              <div className="font-medium">{user.name}</div>
+              <div className="text-gray-400">{user.email}</div>
+            </div>
+            <button
+              onClick={signOut}
+              className="ml-4 px-3 py-1 text-sm bg-red-600 hover:bg-red-700 rounded-md transition-colors"
             >
-              {departments.map((dept) => (
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Departments Section */}
+            <div className="space-y-4">
+              {departments?.map((dept) => (
                 <DepartmentSlider
                   key={dept.name}
-                  {...dept}
+                  name={dept.name}
+                  metrics={dept.metrics}
                   isLoading={loading}
                 />
               ))}
-            </aside>
+            </div>
 
-            {/* Main Content */}
-            <main className="col-span-9 space-y-6">
-              {/* KPIs */}
-              <section 
-                className="grid grid-cols-4 gap-4"
-                aria-label="Key Performance Indicators"
-              >
-                {kpis.map((kpi) => (
-                  <KPICard
-                    key={kpi.label}
-                    {...kpi}
-                    isLoading={loading}
-                  />
-                ))}
-              </section>
+            {/* News Section */}
+            {news && news.length > 0 && <NewsTicker news={news} />}
 
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-2 gap-6">
-                {/* Active Scenario */}
-                <section className="relative">
-                  {loading && (
-                    <div className="absolute inset-0 bg-gray-800/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <LoadingSpinner size={20} text="Loading scenario..." />
-                      </div>
-                    </div>
-                  )}
-                  <ScenarioSection
-                    scenario={scenario}
-                    onSelectSolution={handleSolutionSelect}
-                    onSpecialProjects={handleSpecialProjects}
-                    loading={loading}
-                    error={error ? new Error(error) : undefined}
-                  />
-                </section>
+            {/* Scenario Section */}
+            <ScenarioSection
+              scenario={scenario}
+              onSelectSolution={handleSolutionSelect}
+              onSpecialProjects={handleSpecialProjects}
+              loading={loading}
+              error={errorObj}
+            />
+          </div>
 
-                {/* Smart Insights Panel */}
-                <InsightsPanel
-                  contextData={{
-                    kpis,
-                    departments,
-                    scenario
-                  }}
-                />
-              </div>
-            </main>
+          {/* Right Column - Insights */}
+          <div className="space-y-8">
+            <InsightsPanel
+              contextData={{ kpis, departments, scenario }}
+              className="h-full"
+            />
           </div>
         </div>
-
-        {/* News Ticker - Fixed to bottom */}
-        <footer className="fixed bottom-0 left-0 right-0 w-full">
-          <div className="max-w-7xl mx-auto px-6">
-            <NewsTicker news={news || []} />
-          </div>
-        </footer>
-      </div>
-    </ErrorBoundary>
+      </main>
+    </div>
   );
-};
-
-export default DashboardTemplate;
+}

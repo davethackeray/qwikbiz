@@ -1,110 +1,86 @@
 # Engineering Journal
 
-## Overview
-This journal tracks daily engineering decisions, problem-solving approaches, and technical learnings. Each entry should be detailed enough to understand the context and rationale of decisions made.
+> ⚠️ **IMPORTANT: Journal Preservation Policy**
+> 
+> This engineering journal serves as a critical historical record of our project's evolution. 
+> - NEVER delete or modify existing entries
+> - Each new entry should be added as a new file in the `journals/` directory
+> - Use the format: `YYYY-MM-DD-brief-description.md`
+> - If corrections are needed, add them as new entries with references to the original
+>
+> This ensures we maintain a complete trail of technical decisions, challenges, and solutions for future engineers.
 
-## Journal Entry Template
-```markdown
-### YYYY-MM-DD: Title
+## Journal Structure
 
-#### Context
-Brief background of what we're working on and why
-
-#### Decisions Made
-1. Decision name
-   - Rationale
-   - Alternatives considered
-   - Impact
-
-#### Technical Details
-- Implementation approach
-- Key considerations
-- Challenges faced
-
-#### Learnings
-- What worked well
-- What could be improved
-- Key takeaways
-
-#### Next Steps
-- Upcoming tasks
-- Areas needing attention
-- Potential improvements
+### Directory Layout
+```
+docs/
+└── engineering/
+    ├── JOURNAL.md          # This index file
+    └── journals/           # Daily journal entries
+        ├── YYYY-MM-DD-brief-description.md
+        └── ...
 ```
 
-## Recent Entries
+### Entry Naming Convention
+- Use the date format: `YYYY-MM-DD`
+- Add a brief, hyphenated description
+- Use lowercase for the description
+- Example: `2025-01-28-auth-system.md`
 
-### 2025-01-26: News Ticker Implementation & Documentation Standards
+### Entry Format
+Each journal entry should include:
+1. Clear title and overview
+2. Completed tasks
+3. Technical decisions and rationale
+4. Challenges and solutions
+5. Next steps or follow-up items
 
-#### Context
-Working on implementing a professional news ticker for business dashboard and establishing robust documentation standards.
+## Latest Entries
 
-#### Decisions Made
-1. Fixed JSON Parsing in AI Service
-   - Enhanced cleanJsonString function with multi-stage processing
-   - Added robust quote handling and error diagnostics
-   - Implemented proper TypeScript error handling
-   - Rationale: Needed to handle complex JSON responses reliably
+### 2025-01-28
+- [Show & Tell Protocol Implementation](./journals/2025-01-28-show-and-tell.md)
+  - Session templates and guidelines
+  - Documentation framework
+  - Success metrics defined
 
-2. News Ticker Implementation
-   - Used fixed positioning with backdrop blur
-   - Implemented smooth scrolling animation
-   - Added mock data for development
-   - Rationale: Creates professional, unobtrusive news display
+- [Testing Standards Implementation](./journals/2025-01-28-testing-standards.md)
+  - Jest configuration and setup
+  - Test infrastructure implementation
+  - Coverage requirements defined
 
-3. Documentation Standards
-   - Created comprehensive PR documentation system
-   - Established engineering documentation standards
-   - Implemented structured templates
-   - Rationale: Ensures consistent, high-quality documentation
+- [Documentation & Standards Implementation](./journals/2025-01-28-documentation-standards.md)
+  - Updated testing standards
+  - Implemented show & tell protocols
+  - Enhanced error resolution
+  
+- [Authentication System Implementation](./journals/2025-01-28-auth-system.md)
+  - Google OAuth integration
+  - JWT session management
+  - Security improvements
 
-#### Technical Details
-1. JSON Parsing Solution:
-   - Multi-stage cleaning process
-   - Quote normalization
-   - Triple-pass processing for nested quotes
-   - Enhanced error diagnostics
+## Entry Guidelines
 
-2. News Ticker Implementation:
-   - RequestAnimationFrame for smooth scrolling
-   - CSS backdrop-blur for modern aesthetics
-   - useEffect for proper state management
-   - Responsive design considerations
+1. **Content**
+   - Focus on technical details
+   - Include code examples when relevant
+   - Document architectural decisions
+   - Note important metrics and benchmarks
 
-3. Documentation System:
-   - Markdown-based templates
-   - Clear file organization
-   - Standardized formats
-   - Regular maintenance protocols
+2. **Structure**
+   - Use clear headings
+   - Include code blocks with syntax highlighting
+   - Link to relevant PRs and documentation
+   - Tag key stakeholders when needed
 
-#### Learnings
-1. What Worked Well:
-   - Breaking down complex JSON parsing into stages
-   - Using mock data for development
-   - Establishing clear documentation standards
+3. **Follow-up**
+   - List action items
+   - Document open questions
+   - Link related entries
+   - Track progress on key initiatives
 
-2. Areas for Improvement:
-   - Could add automated tests for JSON parsing
-   - Consider adding loading states to news ticker
-   - Automate some documentation processes
-
-3. Key Takeaways:
-   - Proper documentation is crucial for project success
-   - Mock data speeds up development
-   - Clear standards improve team efficiency
-
-#### Next Steps
-1. Technical Tasks:
-   - Add automated tests
-   - Implement error states
-   - Consider performance optimizations
-
-2. Documentation:
-   - Monitor documentation adherence
-   - Gather team feedback
-   - Refine standards as needed
-
-3. Future Considerations:
-   - News filtering options
-   - Click-through analytics
-   - Documentation automation tools
+## Resources
+- [Testing Standards](./TESTING_STANDARDS.md)
+- [Documentation Standards](./DOCUMENTATION_STANDARDS.md)
+- [Engineering Rules](./ENGINEERING_RULES.md)
+- [Architecture Documentation](../architecture/ARCHITECTURE.md)

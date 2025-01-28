@@ -9,15 +9,57 @@ graph TB
     UI[User Interface]
     AI[AI Service]
     News[News Service]
+    Sim[Simulation Engine]
     DB[(Database)]
     Cache[(Cache)]
     
     UI --> AI
     UI --> News
+    UI --> Sim
     UI --> DB
     AI --> Cache
     News --> Cache
+    Sim --> Cache
 ```
+
+### Real-Time Simulation Engine
+
+The simulation engine provides real-time business environment modeling with the following components:
+
+```mermaid
+graph TB
+    MS[MarketSimulator]
+    DN[DepartmentNetwork]
+    EP[EventProcessor]
+    MA[MetricsAggregator]
+    
+    MS --> DN
+    MS --> EP
+    MS --> MA
+    DN --> MA
+    EP --> MA
+```
+
+#### Key Components
+1. **MarketSimulator**:
+   - Real-time event processing (200ms tick)
+   - Event queueing and timing control
+   - State management
+   
+2. **DepartmentNetwork**:
+   - Cross-department dependency mapping
+   - Impact propagation
+   - State validation
+   
+3. **EventProcessor**:
+   - Event history tracking
+   - Real-time event emission
+   - Listener management
+   
+4. **MetricsAggregator**:
+   - Performance-optimized calculations
+   - Metrics caching
+   - Historical data management
 
 ## Core Components
 

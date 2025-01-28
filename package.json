@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "verify-env": "ts-node scripts/verify-env.ts",
+    "predev": "npm run verify-env",
     "dev": "next dev --turbopack",
-    "prebuild": "node scripts/prebuild.js",
+    "prebuild": "npm run verify-env && node scripts/prebuild.js",
     "build": "next build",
-    "prestart": "node scripts/prebuild.js",
+    "prestart": "npm run verify-env && node scripts/prebuild.js",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:ci": "npm run verify-env && jest"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -25,15 +29,20 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "jest": "^29.7.0",
     "postcss": "^8",
     "prisma": "^6.2.1",
     "ps-node": "^0.1.6",
     "tailwindcss": "^3.4.1",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

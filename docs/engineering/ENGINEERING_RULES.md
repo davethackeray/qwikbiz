@@ -55,6 +55,10 @@ src/
 - Avoid unnecessary re-renders
 - Lazy load components when possible
 
+### Dependency Injection
+- Classes should accept dependencies via the constructor to facilitate testing and maintainability.
+- Example: `MarketSimulator` class now accepts `DepartmentNetwork`, `EventProcessor`, and `MetricsAggregator` via the constructor.
+
 ### Documentation
 - Include JSDoc comments for all components
 - Document props with TypeScript interfaces
@@ -62,7 +66,77 @@ src/
 - Include performance considerations
 - Document any side effects
 
-## 3. Error Handling
+## 3. Real-Time Simulation Standards
+
+### Performance Requirements
+1. Event Processing:
+   - Process events within 200ms
+   - Maintain event ordering
+   - Handle high-frequency updates
+2. State Management:
+   - Cache metrics for fast access
+   - Implement window-based history
+   - Optimize memory usage
+3. Cross-Department Effects:
+   - Track dependency chains
+   - Prevent circular effects
+   - Apply impact calculations
+
+### Implementation Pattern
+```typescript
+class SimulationComponent {
+  // Use dependency injection
+  constructor(dependencies: Dependencies) {
+    this.validateDependencies(dependencies);
+    this.initializeState();
+  }
+
+  // Implement clear state management
+  private initializeState(): void {
+    this.state = {
+      currentTick: 0,
+      events: [],
+      metrics: new Map()
+    };
+  }
+
+  // Handle real-time updates
+  processRealTimeEvents(events: Event[]): void {
+    const start = Date.now();
+    try {
+      this.validateEvents(events);
+      this.updateState(events);
+      this.notifyListeners();
+    } catch (error) {
+      this.handleError(error);
+    }
+    this.checkPerformance(Date.now() - start);
+  }
+
+  // Monitor performance
+  private checkPerformance(duration: number): void {
+    if (duration > 200) {
+      console.warn(`Performance threshold exceeded: ${duration}ms`);
+    }
+  }
+}
+```
+
+### Testing Requirements
+1. Performance testing:
+   - Response time validation
+   - Memory usage monitoring
+   - Load testing
+2. State validation:
+   - Data consistency checks
+   - Cross-department effects
+   - Error scenarios
+3. Integration testing:
+   - Component interaction
+   - Event flow validation
+   - System stability
+
+## 4. Error Handling
 
 ### Guidelines
 1. Use TypeScript for type safety

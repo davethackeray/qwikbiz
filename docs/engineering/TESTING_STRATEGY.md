@@ -1,33 +1,61 @@
-# Testing Strategy
+## Testing Strategy
 
-## Machine-Readable Test Requirements
+### Unit Testing
+- Ensure all classes accept dependencies via the constructor to facilitate testing.
+- Example: `MarketSimulator` class now accepts `DepartmentNetwork`, `EventProcessor`, and `MetricsAggregator` via the constructor.
 
+### Real-Time Simulation Testing
 ```typescript
-interface TestRequirements {
-  // Required coverage thresholds
-  coverage: {
-    statements: 90;
-    branches: 85;
-    functions: 90;
-    lines: 90;
+interface SimulationTestRequirements {
+  performance: {
+    eventProcessing: '<=200ms';
+    stateUpdates: '<=50ms';
+    metricsCalculation: '<=100ms';
   };
-  
-  // Test types that must be implemented
-  requiredTestTypes: [
-    'unit',
-    'integration',
-    'e2e',
-    'performance',
-    'accessibility'
-  ];
-
-  // Files that must have 100% coverage
-  criticalPaths: [
-    'src/hooks/useDashboard.ts',
-    'src/lib/services/**/*',
-    'src/components/ErrorBoundary.tsx'
-  ];
+  reliability: {
+    eventOrdering: true;
+    stateConsistency: true;
+    errorRecovery: true;
+  };
+  scalability: {
+    maxDepartments: 100;
+    maxActiveEvents: 1000;
+    maxEventHistory: 10000;
+  };
 }
+```
+
+### Cross-Department Testing
+```typescript
+interface DepartmentTestRequirements {
+  dependencies: {
+    validation: true;
+    circularDetection: true;
+    impactPropagation: true;
+  };
+  metrics: {
+    rangeValidation: true;
+    historicalTracking: true;
+    aggregationAccuracy: true;
+  };
+  performance: {
+    propagationTime: '<=100ms';
+    metricsUpdate: '<=50ms';
+    stateSync: '<=50ms';
+  };
+}
+```
+
+### Integration Testing
+- Update integration tests to reflect changes in class constructors.
+- Critical paths for simulation components:
+```typescript
+const criticalPaths = [
+  'src/hooks/useDashboard.ts',
+  'src/lib/services/**/*',
+  'src/components/ErrorBoundary.tsx',
+  'src/features/simulation/**/*'
+];
 ```
 
 ## Test File Structure

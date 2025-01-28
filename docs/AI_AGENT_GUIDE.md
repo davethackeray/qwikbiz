@@ -1,137 +1,259 @@
-# AI Agent Development Guide - Primary Documentation Index
+# AI Agent Guide v2.0
 
-## Required Documentation Reading Order
+## Introduction
+This guide serves as the primary reference for AI agents working on the QwikBiz project. It provides structured workflows, best practices, and machine-readable interfaces for efficient development.
 
-```typescript
-interface DocumentationOrder {
-  step1: {
-    document: 'AI_AGENT_GUIDE.md';
-    purpose: 'Primary index and overview';
-    location: '/docs/AI_AGENT_GUIDE.md';
-    required: true;
-  };
-  step2: {
-    document: 'pull-requests/README.md';
-    purpose: 'Feature tracking and prioritization';
-    location: '/docs/pull-requests/README.md';
-    required: true;
-  };
-  step3: {
-    document: 'ARCHITECTURE.md';
-    purpose: 'System design and structure';
-    location: '/docs/architecture/ARCHITECTURE.md';
-    required: true;
-  };
-  step4: {
-    document: 'ENGINEERING_RULES.md';
-    purpose: 'Development standards';
-    location: '/docs/engineering/ENGINEERING_RULES.md';
-    required: true;
-  };
-  step5: {
-    document: 'TESTING_STRATEGY.md';
-    purpose: 'Testing requirements';
-    location: '/docs/engineering/TESTING_STRATEGY.md';
-    required: true;
-  };
-  step6: {
-    document: 'CHANGE_PROCESS.md';
-    purpose: 'Change management workflow';
-    location: '/docs/engineering/CHANGE_PROCESS.md';
-    required: true;
-  };
-  step7: {
-    document: 'FEATURE_PROPOSAL.md';
-    purpose: 'Enhancement proposal format';
-    location: '/docs/engineering/FEATURE_PROPOSAL.md';
-    required: true;
-  };
-}
-
-interface DocumentationValidation {
-  validateReadingOrder(): boolean;
-  ensureComprehension(): boolean;
-  confirmRequirements(): boolean;
-}
-```
-
-## Quick Access Index
+## Core Development Protocol
 
 ```typescript
-interface ProjectStructure {
-  core: {
-    atomic: {
-      atoms: 'src/components/atoms/*';
-      molecules: 'src/components/molecules/*';
-      organisms: 'src/components/organisms/*';
-      templates: 'src/components/templates/*';
+interface DevelopmentFlow {
+  planning: {
+    analysis: {
+      codebaseExploration: boolean;
+      documentationReview: boolean;
+      requirementValidation: boolean;
     };
-    services: 'src/lib/services/*';
-    hooks: 'src/hooks/*';
-    types: 'src/types/*';
+    design: {
+      architecturalConsiderations: string[];
+      securityImplications: string[];
+      performanceTargets: Record<string, number>;
+    };
+    validation: {
+      feasibilityCheck: boolean;
+      riskAssessment: string[];
+      resourceRequirements: string[];
+    };
   };
-  documentation: {
-    pullRequests: {
-      index: 'docs/pull-requests/README.md';
-      activeProposals: 'docs/pull-requests/*.md';
+  implementation: {
+    coding: {
+      followStandards: boolean;
+      typeChecking: boolean;
+      errorHandling: boolean;
+      documentation: boolean;
     };
-    architecture: 'docs/architecture/ARCHITECTURE.md';
-    engineering: {
-      rules: 'docs/engineering/ENGINEERING_RULES.md';
-      testing: 'docs/engineering/TESTING_STRATEGY.md';
-      changes: 'docs/engineering/CHANGE_PROCESS.md';
+    testing: {
+      unitTests: boolean;
+      integrationTests: boolean;
+      securityTests: boolean;
+      performanceTests: boolean;
     };
-    guides: {
-      quickstart: 'docs/guides/QUICKSTART.md';
-      onboarding: 'docs/guides/ONBOARDING.md';
+    review: {
+      codeSelfReview: boolean;
+      documentationUpdate: boolean;
+      securityValidation: boolean;
+    };
+  };
+  delivery: {
+    verification: {
+      allTestsPassing: boolean;
+      lintersPassing: boolean;
+      typesValid: boolean;
+    };
+    documentation: {
+      updated: boolean;
+      machineReadable: boolean;
+      examples: boolean;
+    };
+    handover: {
+      prDescription: boolean;
+      testEvidence: boolean;
+      securityChecks: boolean;
     };
   };
 }
 ```
 
-## Feature Implementation Process
+## Show & Tell Protocol
 
 ```typescript
-interface FeatureWorkflow {
-  step1: {
-    action: 'Review PR Index';
-    purpose: 'Check existing and proposed features';
-    location: '/docs/pull-requests/README.md';
-  };
-  step2: {
-    action: 'Apply Prioritization Rubrics';
-    purpose: 'Determine implementation priority';
-    criteria: {
-      businessValue: number;  // Threshold: 7.5
-      technicalViability: number; // Threshold: 6.0
-      strategicFit: number;  // Threshold: 7.0
+interface ShowAndTell {
+  preparation: {
+    demo: {
+      feature: string;
+      workingExample: string;
+      testCases: string[];
+      userFlows: string[];
+    };
+    documentation: {
+      technicalOverview: string;
+      userInstructions: string;
+      troubleshooting: string[];
+    };
+    validation: {
+      performanceMetrics: Record<string, number>;
+      securityChecks: string[];
+      accessibilityTests: string[];
     };
   };
-  step3: {
-    action: 'Create Feature Proposal';
-    purpose: 'Document implementation plan';
-    template: '/docs/engineering/FEATURE_PROPOSAL.md';
+  execution: {
+    steps: {
+      introduction: string;
+      demonstration: string;
+      userInteraction: string;
+      feedbackCollection: string;
+    };
+    contingency: {
+      fallbackScenarios: string[];
+      recoverySteps: string[];
+      supportDocs: string[];
+    };
   };
-  step4: {
-    action: 'Implementation';
-    purpose: 'Develop the feature';
-    guidelines: '/docs/engineering/ENGINEERING_RULES.md';
-  };
-  step5: {
-    action: 'Testing and Validation';
-    purpose: 'Ensure quality and performance';
-    requirements: '/docs/engineering/TESTING_STRATEGY.md';
-  };
-  step6: {
-    action: 'Documentation Update';
-    purpose: 'Record system impact and lessons';
-    updates: [
-      'Architecture documentation',
-      'Testing results',
-      'PR index'
-    ];
+  followup: {
+    documentation: {
+      userFeedback: string[];
+      improvements: string[];
+      bugReports: string[];
+    };
+    actions: {
+      tasks: string[];
+      priorities: string[];
+      assignments: string[];
+    };
   };
 }
 ```
 
-[Previous content continues unchanged...]
+## Development Best Practices
+
+### Code Organization
+```typescript
+interface CodeStandards {
+  structure: {
+    atomic: boolean;     // Use atomic design for components
+    featureBased: boolean; // Feature-based directory structure
+    typeSafe: boolean;   // Strong TypeScript typing
+  };
+  patterns: {
+    hooks: boolean;      // Custom React hooks for logic
+    context: boolean;    // React Context for state
+    hoc: boolean;        // Higher-order components
+  };
+  quality: {
+    linting: boolean;    // ESLint compliance
+    formatting: boolean; // Prettier formatting
+    testing: boolean;    // Jest test coverage
+  };
+}
+```
+
+### Documentation Standards
+```typescript
+interface DocumentationRequirements {
+  code: {
+    interfaces: boolean;    // TypeScript interfaces
+    jsdoc: boolean;        // JSDoc comments
+    examples: boolean;      // Usage examples
+  };
+  architecture: {
+    diagrams: boolean;     // System diagrams
+    flowcharts: boolean;   // Process flows
+    decisions: boolean;    // Architecture decisions
+  };
+  operations: {
+    setup: boolean;        // Setup instructions
+    deployment: boolean;   // Deployment guides
+    monitoring: boolean;   // Monitoring docs
+  };
+}
+```
+
+## Engineering Journal Protocol
+Maintain detailed records in `docs/engineering/JOURNAL.md`:
+- Daily progress
+- Technical decisions
+- Learning insights
+- Next steps
+
+### Journal Entry Format
+```typescript
+interface JournalEntry {
+  date: string;
+  author: string;
+  category: 'feature' | 'bugfix' | 'refactor' | 'docs';
+  details: {
+    completed: string[];
+    decisions: string[];
+    challenges: string[];
+    nextSteps: string[];
+  };
+  metrics?: {
+    performance?: Record<string, number>;
+    coverage?: Record<string, number>;
+    complexity?: Record<string, number>;
+  };
+}
+```
+
+## Testing Protocol
+```typescript
+interface TestingRequirements {
+  unit: {
+    coverage: number;      // Minimum 90%
+    isolation: boolean;    // Pure unit tests
+    mocking: boolean;      // Proper test doubles
+  };
+  integration: {
+    coverage: number;     // Minimum 85%
+    e2e: boolean;        // End-to-end flows
+    performance: boolean; // Performance checks
+  };
+  security: {
+    penTests: boolean;   // Penetration tests
+    scanning: boolean;   // Security scanning
+    compliance: boolean; // Compliance checks
+  };
+}
+```
+
+## Error Resolution Workflow
+Follow the Error Resolution Protocol in `.clinerules`:
+1. Triage with multiple hypotheses
+2. Simulate different approaches
+3. Present analysis
+4. Implement solution
+
+## Security Guidelines
+Follow Zero-Trust principles:
+- Validate all inputs
+- Secure all endpoints
+- Encrypt sensitive data
+- Audit all actions
+
+## Performance Standards
+```typescript
+interface PerformanceTargets {
+  pageLoad: {
+    initial: number;    // Maximum 2s
+    subsequent: number; // Maximum 1s
+  };
+  interactions: {
+    response: number;   // Maximum 100ms
+    animation: number;  // 60fps minimum
+  };
+  api: {
+    response: number;   // Maximum 200ms
+    timeout: number;    // 5s maximum
+  };
+}
+```
+
+## Communication Protocol
+- Use TypeScript interfaces for clarity
+- Provide machine-readable documentation
+- Follow conventional commit messages
+- Update engineering journal regularly
+
+## Project Mechanics
+- Feature branch workflow
+- PR reviews with security focus
+- Automated testing pipeline
+- Regular show & tell sessions
+
+## Handover Process
+1. Update documentation
+2. Verify all tests pass
+3. Complete engineering journal
+4. Document next steps
+5. Tag relevant team members
+
+Remember: All changes must be documented, tested, and secure by default.
