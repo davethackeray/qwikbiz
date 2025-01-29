@@ -1,101 +1,59 @@
+'use client';
+
 import React from 'react';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /**
-   * Button variant determines the visual style
-   */
-  variant?: 'primary' | 'secondary' | 'outline' | 'text';
-  /**
-   * Optional loading state
-   */
-  isLoading?: boolean;
-  /**
-   * Optional icon to display before the button text
-   */
-  icon?: React.ReactNode;
-  /**
-   * Optional size variant
-   */
-  size?: 'small' | 'medium' | 'large';
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  fullWidth?: boolean;
 }
 
-/**
- * Button component for user interactions
- * @example
- * <Button variant="primary" onClick={() => console.log('clicked')}>
- *   Click me
- * </Button>
- */
-export const Button: React.FC<ButtonProps> = ({
-  variant = 'primary',
-  isLoading = false,
-  icon,
-  size = 'medium',
+export function Button({
   children,
-  disabled,
   className = '',
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
+  disabled = false,
+  type = 'button',
   ...props
-}) => {
-  const baseClasses = 'inline-flex items-center justify-center rounded font-medium transition-colors';
+}: ButtonProps) {
+  const baseStyles = 'inline-flex items-center justify-center rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors';
   
-  const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 active:bg-gray-400',
-    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 active:bg-blue-100',
-    text: 'text-blue-600 hover:bg-blue-50 active:bg-blue-100',
+  const variantStyles = {
+    primary: 'bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus:ring-indigo-500',
+    secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500',
+    outline: 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500'
   };
 
-  const sizeClasses = {
-    small: 'px-3 py-1 text-sm',
-    medium: 'px-4 py-2',
-    large: 'px-6 py-3 text-lg',
+  const sizeStyles = {
+    sm: 'px-3 py-2 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg'
   };
 
-  const classes = [
-    baseClasses,
-    variantClasses[variant],
-    sizeClasses[size],
-    disabled ? 'opacity-50 cursor-not-allowed' : '',
-    isLoading ? 'cursor-wait' : '',
-    className,
-  ].join(' ');
+  const widthStyles = fullWidth ? 'w-full' : '';
+  const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : '';
+
+  const combinedClassName = `
+    ${baseStyles}
+    ${variantStyles[variant]}
+    ${sizeStyles[size]}
+    ${widthStyles}
+    ${disabledStyles}
+    ${className}
+  `.trim();
 
   return (
     <button
-      type="button"
-      disabled={disabled || isLoading}
-      className={classes}
+      type={type}
+      disabled={disabled}
+      className={combinedClassName}
       {...props}
     >
-      {isLoading ? (
-        <span className="mr-2">
-          <svg
-            className="animate-spin h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-            />
-          </svg>
-        </span>
-      ) : icon ? (
-        <span className="mr-2">{icon}</span>
-      ) : null}
       {children}
     </button>
   );
-};
+}
 
 export default Button;

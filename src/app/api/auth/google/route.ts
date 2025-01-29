@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createAuthCookie, createToken } from '@/lib/utils/auth';
+import { rateLimit } from '@/middleware/rateLimit';
 
 interface GoogleTokenResponse {
   access_token: string;

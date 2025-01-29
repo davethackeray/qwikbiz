@@ -1,25 +1,15 @@
-import type { Metadata } from "next";
+import React from "react";
 import { Inter } from "next/font/google";
-import { AuthProvider } from "@/context/AuthContext";
-import { AuthService } from "@/lib/services/auth";
+import ClientLayout from "./client-layout";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// Initialize auth service with environment variables
-const authService = new AuthService({
-  clientId: process.env.GOOGLE_CLIENT_ID!,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  redirectUri: process.env.GOOGLE_REDIRECT_URI!,
-  scopes: ['email', 'profile']
-});
-
-export const metadata: Metadata = {
-  title: "BizSim - Business Simulation Dashboard",
-  description: "Interactive business simulation with real-time scenarios and AI-powered insights",
+export const metadata = {
+  title: "QwikBiz - Business Simulation",
+  description: "Accelerate your business decisions with real-time simulation and AI insights",
 };
 
-// Root layout with auth provider
 export default function RootLayout({
   children,
 }: {
@@ -27,10 +17,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-900 text-white`} suppressHydrationWarning>
-        <AuthProvider authService={authService}>
-          {children}
-        </AuthProvider>
+      <body className={inter.className} suppressHydrationWarning>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

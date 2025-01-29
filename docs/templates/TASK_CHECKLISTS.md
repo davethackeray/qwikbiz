@@ -1,198 +1,120 @@
-# Engineering Task Checklists
+# Task Checklists
 
-These checklists ensure consistent quality and process adherence across all engineering work. Use these at their respective stages to maintain high standards.
+## Senior Engineer Session End Checklist
 
-## Start of Task Checklist
+### Code Quality
+- [ ] All tests are passing
+- [ ] Code coverage meets standards (90% statements, 85% branches)
+- [ ] No TypeScript errors or warnings
+- [ ] ESLint passes without warnings
+- [ ] Performance benchmarks are met
 
-```typescript
-interface TaskStartChecklist {
-  planning: {
-    requirements: {
-      documentationReviewed: boolean;     // Review all related documentation
-      acceptanceCriteriaVerified: boolean; // Verify acceptance criteria
-      dependenciesIdentified: boolean;     // Identify all dependencies
-    };
-    security: {
-      securityImplicationsAssessed: boolean; // Check security impact
-      dataPrivacyReviewed: boolean;         // Review data privacy concerns
-      complianceVerified: boolean;          // Verify regulatory compliance
-    };
-    technical: {
-      architectureReviewed: boolean;        // Review architectural impact
-      testingStrategyDefined: boolean;      // Define testing approach
-      performanceConsidered: boolean;       // Consider performance impacts
-    };
-  };
-  setup: {
-    environment: {
-      branchCreated: boolean;              // Create feature branch
-      localEnvironmentVerified: boolean;    // Verify local setup
-      dependenciesInstalled: boolean;       // Install dependencies
-    };
-    documentation: {
-      journalStarted: boolean;             // Start engineering journal entry
-      contextDocumented: boolean;          // Document task context
-      decisionsTracked: boolean;           // Track initial decisions
-    };
-    testing: {
-      testPlanCreated: boolean;           // Create test plan
-      testEnvironmentReady: boolean;      // Prepare test environment
-      baselineMetricsRecorded: boolean;   // Record baseline metrics
-    };
-  };
-}
-```
+### Documentation
+- [ ] Consolidated journal entries for the day
+- [ ] Updated JOURNAL.md index with action/insight summary
+- [ ] Added relevant patterns to INSIGHTS.md
+- [ ] Cross-referenced new insights in documentation
+- [ ] Updated relevant architecture documents
+- [ ] Added code comments for complex solutions
 
-## End of Task Checklist
+### Knowledge Transfer
+- [ ] Documented key decisions and rationale
+- [ ] Added examples for new patterns
+- [ ] Updated performance metrics if changed
+- [ ] Added testing guidelines for new features
 
-```typescript
-interface TaskEndChecklist {
-  codeQuality: {
-    testing: {
-      unitTestsWritten: boolean;          // Write unit tests
-      integrationTestsWritten: boolean;   // Write integration tests
-      testsCoverage: boolean;             // Verify coverage meets standards
-    };
-    review: {
-      selfReviewCompleted: boolean;       // Complete self-review
-      linterPassing: boolean;             // Verify linter checks
-      typeChecksPassing: boolean;         // Verify type checks
-    };
-    security: {
-      securityChecksRun: boolean;         // Run security checks
-      vulnerabilitiesAddressed: boolean;  // Address vulnerabilities
-      secretsScanned: boolean;            // Scan for secrets
-    };
-  };
-  documentation: {
-    technical: {
-      apiDocsUpdated: boolean;           // Update API documentation
-      readmeUpdated: boolean;            // Update README if needed
-      changelogUpdated: boolean;         // Update changelog
-    };
-    process: {
-      journalCompleted: boolean;         // Complete journal entry
-      decisionsDocumented: boolean;      // Document decisions
-      metricsRecorded: boolean;         // Record final metrics
-    };
-    review: {
-      spellingGrammarChecked: boolean;   // Check spelling/grammar
-      linksVerified: boolean;           // Verify documentation links
-      examplesValidated: boolean;       // Validate examples
-    };
-  };
-  delivery: {
-    verification: {
-      acceptanceCriteriaMet: boolean;    // Verify acceptance criteria
-      performanceValidated: boolean;     // Validate performance
-      accessibilityChecked: boolean;     // Check accessibility
-    };
-    cleanup: {
-      consoleLogsRemoved: boolean;       // Remove console logs
-      debugCodeRemoved: boolean;         // Remove debug code
-      todosCaptured: boolean;           // Capture remaining TODOs
-    };
-    readiness: {
-      prTemplateCompleted: boolean;      // Complete PR template
-      ciPassing: boolean;               // Verify CI passing
-      deploymentTested: boolean;        // Test deployment
-    };
-  };
-}
-```
+### Information Hygiene
+- [ ] Consolidated multiple journal entries for the same day
+- [ ] Moved outdated patterns to archive
+- [ ] Updated cross-references in documentation
+- [ ] Verified documentation accuracy
+- [ ] Checked for duplicate information
+- [ ] Removed obsolete documentation
 
-## End of Session Checklist
+## Pull Request Checklist
 
-```typescript
-interface SessionEndChecklist {
-  codeManagement: {
-    versionControl: {
-      changesCommitted: boolean;         // Commit all changes
-      branchUpdated: boolean;           // Update branch with main
-      conflictsResolved: boolean;       // Resolve any conflicts
-    };
-    workspace: {
-      testsPassLocally: boolean;        // Verify tests pass
-      buildSuccessful: boolean;         // Verify build succeeds
-      environmentClean: boolean;        // Clean environment if needed
-    };
-  };
-  documentation: {
-    progress: {
-      journalUpdated: boolean;          // Update engineering journal
-      progressDocumented: boolean;      // Document progress
-      blockersCaptured: boolean;        // Document blockers
-    };
-    handover: {
-      statusUpdated: boolean;           // Update status
-      nextStepsDocumented: boolean;     // Document next steps
-      contextShared: boolean;           // Share context if needed
-    };
-  };
-  planning: {
-    review: {
-      progressAssessed: boolean;        // Assess progress
-      estimatesAdjusted: boolean;      // Adjust estimates if needed
-      risksUpdated: boolean;           // Update risk assessment
-    };
-    preparation: {
-      tasksTriaged: boolean;           // Triage remaining tasks
-      prioritiesSet: boolean;          // Set priorities for next session
-      resourcesIdentified: boolean;    // Identify needed resources
-    };
-  };
-}
-```
+### Code Changes
+- [ ] Implementation follows project patterns
+- [ ] Unit tests added/updated
+- [ ] Integration tests added/updated
+- [ ] Performance tests if applicable
+- [ ] Error handling implemented
 
-## Usage Notes
+### Documentation
+- [ ] Technical documentation updated
+- [ ] API documentation if applicable
+- [ ] Testing documentation added
+- [ ] Architecture diagrams updated if needed
+- [ ] Added insights to INSIGHTS.md if applicable
 
-1. **Start of Task**
-   - Complete before writing any code
-   - Focus on preparation and understanding
-   - Document initial decisions
+### Testing
+- [ ] Unit tests pass
+- [ ] Integration tests pass
+- [ ] Performance tests pass
+- [ ] Edge cases covered
+- [ ] Security implications tested
 
-2. **End of Task**
-   - Ensure quality before submitting PR
-   - Verify all documentation is updated
-   - Check all standards are met
+### Performance
+- [ ] Meets performance targets
+- [ ] No memory leaks
+- [ ] Resource usage acceptable
+- [ ] Monitoring in place
 
-3. **End of Session**
-   - Clean up work in progress
-   - Document status for next session
-   - Plan next steps
+## Feature Implementation Checklist
 
-## Implementation
+### Planning
+- [ ] Requirements documented
+- [ ] Architecture design
+- [ ] Test strategy defined
+- [ ] Performance targets set
 
-1. **Integration**
-   - Add to PR template
-   - Include in CI checks
-   - Link from documentation
+### Implementation
+- [ ] Core functionality
+- [ ] Error handling
+- [ ] Logging/monitoring
+- [ ] Security measures
+- [ ] Performance optimization
 
-2. **Automation**
-   - Automate where possible
-   - Track completion rates
-   - Monitor effectiveness
+### Testing
+- [ ] Unit test suite
+- [ ] Integration tests
+- [ ] Performance tests
+- [ ] Security tests
+- [ ] User acceptance tests
 
-3. **Maintenance**
-   - Review regularly
-   - Update based on feedback
-   - Keep aligned with standards
+### Documentation
+- [ ] Technical documentation
+- [ ] API documentation
+- [ ] Usage examples
+- [ ] Performance guidelines
+- [ ] Testing documentation
 
-## Success Metrics
+## Documentation Update Checklist
 
-1. **Quality**
-   - Reduced defect rate
-   - Better documentation
-   - Faster reviews
+### Content Review
+- [ ] Accuracy check
+- [ ] Completeness check
+- [ ] Consistency check
+- [ ] Cross-reference verification
+- [ ] Example validation
 
-2. **Efficiency**
-   - Less rework
-   - Faster onboarding
-   - Better handovers
+### Organization
+- [ ] Proper categorization
+- [ ] Clear hierarchy
+- [ ] Logical flow
+- [ ] Easy navigation
+- [ ] Searchable content
 
-3. **Compliance**
-   - Standards met
-   - Security maintained
-   - Documentation complete
+### Quality Assurance
+- [ ] Technical accuracy
+- [ ] Code examples work
+- [ ] Links are valid
+- [ ] No duplicate content
+- [ ] Current with codebase
 
-Remember: These checklists are living documents. Suggest improvements based on experience.
+### Maintenance
+- [ ] Archive outdated content
+- [ ] Update timestamps
+- [ ] Fix broken references
+- [ ] Remove obsolete information
+- [ ] Update indexes

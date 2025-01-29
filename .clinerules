@@ -68,128 +68,105 @@ interface ErrorResolution {
 }
 ```
 
-## Code Review Protocol
-- All PRs must include:
-  ```typescript
-  interface PullRequest {
-    security: {
-      threatModel: string;
-      vulnerabilityAssessment: string;
-      mitigations: string[];
-    };
-    performance: {
-      benchmarks: Record<string, number>;
-      impactAnalysis: string;
-      optimizations: string[];
-    };
-    alternatives: {
-      approaches: string[];
-      tradeoffs: Record<string, string>;
-      justification: string;
-    };
-    testing: {
-      unitTests: boolean;
-      integrationTests: boolean;
-      e2eTests: boolean;
-      chaosPlan: string;
-    };
-    aiConsiderations: {
-      biasAssessment: string;
-      fairnessChecks: string[];
-      ethicalReview: string;
-    };
-  }
-  ```
+## File Modification Tools Usage Guide
 
-## Code Quality Gates
+### replace_in_file
+USE WHEN:
+- Making targeted changes to specific lines
+- The change is localized and well-defined
+- You can precisely match the existing content
+- The modification is less than 25% of the file
+
+BEST PRACTICES:
+1. Use exact line matches including whitespace
+2. Match complete lines, never partial lines
+3. Include 1-2 lines of context if needed for uniqueness
+4. Multiple SEARCH/REPLACE blocks should be in file order
+5. Verify the match with read_file first if unsure
+
+Example:
 ```typescript
-interface QualityGates {
-  forbidden: {
-    financial: ['floating-point-calculations'];
-    performance: ['unbounded-recursion', 'sync-io-in-hot-paths'];
-    security: ['raw-db-queries', 'hardcoded-secrets'];
-    maintenance: ['magic-numbers-without-docs'];
-  };
-  required: {
-    testing: {
-      coverage: { min: 90, criticalPaths: 100 };
-      types: ['unit', 'integration', 'e2e', 'security'];
-    };
-    documentation: {
-      components: ['purpose', 'api', 'examples'];
-      algorithms: ['complexity', 'tradeoffs', 'quantumReadiness'];
-    };
-    security: {
-      reviews: ['automated', 'peer', 'penetration'];
-      compliance: ['gdpr', 'ccpa', 'hipaa'];
-    };
-  };
-}
+<replace_in_file>
+<path>src/components/Button.tsx</path>
+<diff>
+<<<<<<< SEARCH
+  color: 'blue',
+  size: 'medium',
+=======
+  color: 'indigo',
+  size: 'large',
+>>>>>>> REPLACE
+</diff>
+</replace_in_file>
 ```
 
-## Engineering Best Practices
-```typescript
-interface BestPractices {
-  code: {
-    modularity: {
-      goal: 'Maximize reusability and maintainability';
-      metrics: ['cyclomatic-complexity', 'dependency-count'];
-      validation: 'Automated checks in CI/CD';
-    };
-    documentation: {
-      requirements: ['purpose', 'usage', 'examples'];
-      style: 'Clear and concise with TypeScript types';
-      validation: 'Documentation coverage checks';
-    };
-    testing: {
-      coverage: { target: 90, critical: 100 };
-      types: ['unit', 'integration', 'e2e', 'security'];
-      automation: 'Full CI/CD integration';
-    };
-    errorHandling: {
-      strategy: 'Comprehensive with clear messages';
-      logging: 'Structured with correlation IDs';
-      monitoring: 'Real-time alerts and dashboards';
-    };
-    security: {
-      review: 'Automated and manual checks';
-      compliance: 'Regular audits and updates';
-      monitoring: 'Real-time threat detection';
-    };
-  };
-  process: {
-    versionControl: {
-      commits: 'Conventional commit format';
-      branches: 'Feature branching with protection';
-      reviews: 'Required peer reviews';
-    };
-    documentation: {
-      frequency: 'Real-time updates';
-      validation: 'Automated checks';
-      accessibility: 'Machine and human readable';
-    };
-    qualityAssurance: {
-      gates: ['static-analysis', 'tests', 'security'];
-      automation: 'Continuous validation';
-      metrics: 'Regular reporting';
-    };
-  };
-  maintenance: {
-    journals: {
-      types: ['engineering', 'testing', 'security'];
-      review: 'Weekly analysis';
-      action: 'Immediate updates';
-    };
-    debugging: {
-      process: 'Systematic root cause analysis';
-      collaboration: 'Regular team huddles';
-      documentation: 'Real-time updates';
-    };
-    monitoring: {
-      metrics: ['performance', 'errors', 'usage'];
-      alerts: 'Automated with clear thresholds';
-      response: 'Defined playbooks';
-    };
-  };
-}
-```
+### write_to_file
+USE WHEN:
+- Creating new files
+- The file needs complete rewriting
+- More than 25% of the file is changing
+- Exact line matching is difficult/unreliable
+- File structure is being significantly altered
+
+BEST PRACTICES:
+1. Use for new file creation
+2. Use when replace_in_file fails to match
+3. Include complete file content
+4. Document major rewrites in commit messages
+
+## Code Organization Standards
+
+### File Size Limits
+1. Source Files:
+   - Maximum 300 lines of code
+   - Maximum 500 lines total with comments
+   - Split into modules if exceeded
+
+2. Configuration Files:
+   - Maximum 200 lines
+   - Use extends/imports for larger configs
+   - Split by concern (e.g., separate test configs)
+
+3. Test Files:
+   - Maximum 200 lines per test file
+   - Group related tests in test suites
+   - Use shared test utilities
+
+### Modularization Guidelines
+1. **Single Responsibility**
+   - Each file should have one primary purpose
+   - Extract shared logic to utility files
+   - Use composition over inheritance
+
+2. **Smart Imports**
+   - Import only what's needed
+   - Use barrel files (index.ts) strategically
+   - Avoid circular dependencies
+
+3. **Code Splitting**
+   - Split large components into smaller ones
+   - Use lazy loading where appropriate
+   - Extract complex logic into hooks/utilities
+
+4. **Type Organization**
+   - Separate type definitions into .types.ts files
+   - Use interface segregation
+   - Share types through barrel files
+
+### Comments and Documentation
+1. **Inline Comments**
+   - Only for complex logic
+   - Explain why, not what
+   - Keep under 80 characters
+
+2. **JSDoc**
+   - Required for public APIs
+   - Include examples for complex functions
+   - Document edge cases
+
+3. **README Files**
+   - One per significant directory
+   - Keep focused and concise
+   - Link to related documentation
+
+(Previous content continues...)

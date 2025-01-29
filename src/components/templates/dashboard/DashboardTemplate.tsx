@@ -3,10 +3,13 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useDashboard } from '@/hooks/useDashboard';
-import { DepartmentSlider } from '@/components/organisms/sections/DepartmentSlider';
-import { NewsTicker } from '@/components/organisms/sections/NewsTicker';
-import { ScenarioSection } from '@/components/organisms/sections/ScenarioSection';
-import { InsightsPanel } from '@/components/organisms/sections/InsightsPanel';
+import {
+  DepartmentSlider,
+  NewsTicker,
+  ScenarioSection,
+  InsightsPanel,
+  PerformanceMetrics
+} from '@/components/organisms/sections';
 import { LoadingSpinner } from '@/components/atoms/LoadingSpinner';
 
 interface DashboardTemplateProps {
@@ -67,6 +70,12 @@ export function DashboardTemplate({ user }: DashboardTemplateProps) {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Performance Metrics */}
+        <section className="bg-gray-800 rounded-lg p-6 shadow-lg">
+          <h2 className="text-lg font-semibold mb-4">System Performance</h2>
+          <PerformanceMetrics />
+        </section>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">

@@ -1,254 +1,158 @@
-# AI Senior Engineer Guide
+# AI Senior Engineer Guide - Updated January 29, 2025
 
-As the designated AI senior engineer for QwikBiz, this guide outlines your complete responsibilities and provides essential context for business simulation development.
+## 🎯 Current Focus Areas
 
-## Core Responsibilities
+### 1. Performance Testing Framework
+The automated performance testing framework is now operational with the following key aspects:
 
+#### Testing Infrastructure
+- ES modules-based implementation
+- Automated metrics collection
+- Historical comparison tracking
+- Configurable test scenarios
+
+#### Critical Metrics
 ```typescript
-interface AISeniorEngineerRole {
-  ownership: {
-    codebase: 'Complete ownership of codebase';
-    quality: 'Testing and QA processes';
-    architecture: 'System design and evolution';
-  };
-  leadership: {
-    roadmap: 'Feature planning and prioritization';
-    showAndTell: 'Demo and feedback sessions';
-    improvements: 'Continuous system enhancement';
-  };
-  simulation: {
-    business: 'Business logic and rules';
-    market: 'Market dynamics simulation';
-    ai: 'AI/ML system integration';
-  };
+interface PerformanceTargets {
+  throughput: {
+    minimum: '11M events/sec',
+    current: '12.6M events/sec (peak)',
+    stability: 'Consistent across batch sizes'
+  },
+  latency: {
+    targets: {
+      smallBatch: '50ms',
+      mediumBatch: '100ms',
+      largeBatch: '200ms',
+      stressTest: '500ms'
+    },
+    current: 'Exceeding targets (200-600ms)',
+    priority: 'Critical optimization needed'
+  },
+  memory: {
+    efficiency: 'Excellent (linear scaling)',
+    current: '11.32MB for 50k events',
+    leaks: 'None detected'
+  }
 }
 ```
 
-## Business Simulation Core Concepts
+#### Known Challenges
+1. Event Processing Latency
+   - Currently exceeding targets across all scenarios
+   - Potential architectural bottleneck in event handling
+   - Requires investigation of listener callbacks and queue processing
 
-### 1. Market Dynamics
-```typescript
-interface MarketSystem {
-  departments: {
-    interactions: 'Inter-department effects';
-    efficiency: 'Department performance metrics';
-    synergies: 'Cross-department benefits';
-  };
-  external: {
-    marketTrends: 'Industry/market conditions';
-    competition: 'Competitor behaviors';
-    events: 'Random market events';
-  };
-  metrics: {
-    kpis: 'Key performance indicators';
-    growth: 'Business growth metrics';
-    health: 'Company health metrics';
-  };
-}
-```
+2. Performance Testing
+   - Framework now fully operational
+   - ES modules configuration resolved
+   - Metrics collection working correctly
 
-### 2. Simulation Engine
-- Located in `src/features/simulation/`
-- Core components:
-  - DepartmentNetwork: Department interactions
-  - MarketSimulator: Market condition simulation
-  - EventProcessor: Business event handling
-  - MetricsAggregator: KPI calculation
+### 2. Core System Architecture
 
-### 3. AI Integration Points
-- Strategic decision suggestions
-- Market trend analysis
-- Risk assessment
-- Performance optimization
+#### Event Processing System
+- High-throughput event handling (12.6M events/sec peak)
+- Batch processing capabilities
+- Real-time metrics collection
+- Memory-efficient implementation
 
-## Quality Assurance Responsibilities
+#### Testing Framework
+- Automated performance tests
+- Historical data tracking
+- Configurable test scenarios
+- Metrics aggregation and reporting
 
-### 1. Testing Strategy
-```typescript
-interface QAOwnership {
-  planning: {
-    coverage: 'Define coverage targets';
-    scenarios: 'Identify test scenarios';
-    automation: 'Automate test processes';
-  };
-  execution: {
-    unit: 'Component/function testing';
-    integration: 'System integration testing';
-    simulation: 'Business logic validation';
-  };
-  validation: {
-    accuracy: 'Business logic accuracy';
-    performance: 'System performance metrics';
-    reliability: 'System stability measures';
-  };
-}
-```
+## 🔄 Development Workflow
 
-### 2. Show & Tell Sessions
-- Demonstrate new features
-- Present simulation improvements
-- Gather feedback
-- Plan iterations
+### Performance Testing
+1. Run performance tests:
+   ```bash
+   npm run test:performance
+   ```
+2. Review metrics in:
+   - Console output
+   - performance-results.json
+   - Metrics aggregator
 
-### 3. Quality Metrics
-- Test coverage
-- Performance benchmarks
-- Simulation accuracy
-- User experience measures
+### Adding New Tests
+1. Configure scenarios in:
+   ```
+   src/features/simulation/__tests__/performance/config.ts
+   ```
+2. Define thresholds for:
+   - Processing time
+   - Throughput
+   - Memory usage
+   - Latency targets
 
-## Development Workflow
+## 📊 Key Files
 
-### 1. Feature Development
-```typescript
-interface FeatureWorkflow {
-  planning: {
-    impact: 'Business impact assessment';
-    architecture: 'Technical design decisions';
-    testing: 'Test strategy definition';
-  };
-  implementation: {
-    code: 'Development work';
-    tests: 'Test implementation';
-    docs: 'Documentation updates';
-  };
-  validation: {
-    review: 'Self-review process';
-    testing: 'Comprehensive testing';
-    deployment: 'Deployment strategy';
-  };
-}
-```
+### Performance Testing
+- Runner: `src/features/simulation/__tests__/performance/runner.ts`
+- Config: `src/features/simulation/__tests__/performance/config.ts`
+- Types: `src/features/simulation/__tests__/performance/types.ts`
 
-### 2. Simulation Enhancement
-- Monitor simulation accuracy
-- Implement improvements
-- Validate business logic
-- Document changes
+### Core Components
+- EventProcessor: `src/features/simulation/EventProcessor.ts`
+- MarketSimulator: `src/features/simulation/MarketSimulator.ts`
+- DepartmentNetwork: `src/features/simulation/DepartmentNetwork.ts`
+- MetricsAggregator: `src/features/simulation/MetricsAggregator.ts`
 
-### 3. System Evolution
-- Architecture improvements
-- Performance optimization
-- Feature planning
-- Technical debt management
+## 🎯 Priority Areas
 
-## Business Logic Guidelines
+### Immediate Focus
+1. Event processing latency optimization:
+   - Profile event listener execution
+   - Analyze queue processing
+   - Optimize handler registration
+   - Review emission patterns
 
-### 1. Department Simulation
-```typescript
-interface DepartmentModeling {
-  structure: {
-    hierarchy: 'Organizational structure';
-    relationships: 'Inter-department dependencies';
-    resources: 'Resource allocation';
-  };
-  operations: {
-    efficiency: 'Operational efficiency';
-    bottlenecks: 'Process bottlenecks';
-    improvements: 'Optimization opportunities';
-  };
-  metrics: {
-    performance: 'Performance indicators';
-    costs: 'Cost management';
-    output: 'Productivity measures';
-  };
-}
-```
+2. Metrics enhancement:
+   - Per-event-type latency tracking
+   - Warm-up period filtering
+   - Percentile-based reporting
 
-### 2. Market Simulation
-- Market trend modeling
-- Competition simulation
-- Event generation
-- Economic factors
+3. Documentation:
+   - Performance testing guide
+   - Latency patterns documentation
+   - Metrics interpretation guide
 
-### 3. Performance Metrics
-- KPI calculations
-- Growth metrics
-- Health indicators
-- Trend analysis
+## 📈 Success Metrics
 
-## Decision Making
+### Performance Targets
+1. Throughput:
+   - Maintain >11M events/sec
+   - Consistent scaling with batch size
+   - Stable under sustained load
 
-### 1. Feature Prioritization
-- Business impact assessment
-- Technical feasibility analysis
-- Resource requirements
-- Implementation timeline
+2. Latency:
+   - Small batch: <50ms
+   - Medium batch: <100ms
+   - Large batch: <200ms
+   - Stress test: <500ms
 
-### 2. Architecture Decisions
-- Scalability considerations
-- Performance requirements
-- Maintenance implications
-- Future adaptability
+3. Memory:
+   - Linear scaling with batch size
+   - No memory leaks
+   - Efficient resource utilization
 
-### 3. Quality Decisions
-- Test coverage requirements
-- Performance thresholds
-- Acceptance criteria
-- Release standards
+## 📚 Resources
 
-## Critical Files and Directories
+### Documentation
+- Engineering Journal: `docs/engineering/journals/2025-01-28-performance-testing.md`
+- Next Session Brief: `docs/guides/ai/NEXT_SESSION_BRIEF.md`
+- Architecture Overview: `docs/architecture/ARCHITECTURE.md`
 
-### 1. Simulation Core
-```
-src/features/simulation/
-├── DepartmentNetwork.ts     # Department interaction logic
-├── MarketSimulator.ts      # Market dynamics simulation
-├── EventProcessor.ts       # Business event handling
-└── MetricsAggregator.ts   # KPI and metrics calculation
-```
+### Testing
+- Performance Results: `performance-results.json`
+- Test Configurations: `src/features/simulation/__tests__/performance/config.ts`
+- Testing Framework: `src/features/simulation/__tests__/performance/`
 
-### 2. Services Layer
-```
-src/lib/services/
-├── market.ts              # Market-related services
-├── departments.ts         # Department management
-├── metrics.ts            # Metrics and KPI services
-└── events.ts             # Event handling services
-```
+## 🚀 Next Steps
+1. Review current performance metrics
+2. Analyze event processing bottlenecks
+3. Implement latency optimizations
+4. Update monitoring and alerting
+5. Enhance documentation and guides
 
-### 3. Testing
-```
-src/features/simulation/__tests__/
-├── Integration.test.ts    # System integration tests
-├── MarketSimulator.test.ts # Market simulation tests
-└── DepartmentNetwork.test.ts # Department logic tests
-```
-
-## Essential Questions to Consider
-
-1. **Business Logic**
-   - Is the simulation accurately reflecting real business dynamics?
-   - Are department interactions modeled correctly?
-   - Do market events have appropriate impact?
-
-2. **Technical Architecture**
-   - Is the system scalable for more complex simulations?
-   - Are performance optimizations needed?
-   - Is the code structure maintainable?
-
-3. **Quality Assurance**
-   - Is test coverage sufficient?
-   - Are critical paths fully tested?
-   - Is simulation accuracy validated?
-
-## Continuous Improvement
-
-### 1. System Monitoring
-- Performance metrics
-- Error rates
-- Simulation accuracy
-- User feedback
-
-### 2. Enhancement Planning
-- Feature roadmap
-- Architecture improvements
-- Performance optimization
-- Technical debt reduction
-
-### 3. Documentation Updates
-- Keep technical docs current
-- Update simulation logic docs
-- Maintain architecture docs
-- Document decisions
-
-Remember: As the AI senior engineer, you are the guardian of code quality, simulation accuracy, and system evolution. Your decisions shape the future of QwikBiz.
+Remember: Always validate performance impacts of any changes using the automated testing framework.

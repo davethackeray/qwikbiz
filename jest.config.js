@@ -1,74 +1,56 @@
+const nextJest = require('next/jest');
+const { pathsToModuleNameMapper } = require('ts-jest');
+const { compilerOptions } = require('./tsconfig.json');
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
 /** @type {import('jest').Config} */
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom', // Changed to jsdom for React component testing
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+const customJestConfig = {
+  testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleDirectories: ['node_modules', '<rootDir>/'],
+  moduleNameMapper: {
+    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
-  testMatch: [
-    // Unit tests adjacent to source files
-    '**/__tests__/**/*.test.ts?(x)',
-    '**/*.test.ts?(x)',
-    // Integration tests in dedicated directory
-    '**/integration/**/*.integration.test.ts?(x)',
-    // E2E tests in dedicated directory
-    '**/e2e/**/*.e2e.test.ts?(x)',
-  ],
-  testPathIgnorePatterns: [
+  transform: {
+    '^.+\\.(t|j)sx?$': ['ts-jest', {
+      tsconfig: 'tsconfig.jest.json',
+    }],
+  },
+  transformIgnorePatterns: [
     '/node_modules/',
-    '/dist/',
-    '/.next/',
+    '^.+\\.module\\.(css|sass|scss)$',
   ],
-  collectCoverage: true,
-  coverageDirectory: 'coverage',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.jest.json',
+    },
+  },
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
-    '!src/**/*.stories.{js,jsx,ts,tsx}',
-    '!src/types/**/*',
-    '!src/**/*.styles.{js,ts}',
+    '!src/pages/_app.tsx',
+    '!src/pages/_document.tsx',
   ],
-  coverageThreshold: {
+  coverageThresholds: {
     global: {
-      statements: 90,
       branches: 85,
       functions: 90,
       lines: 90,
-    },
+      statements: 90
+    }
   },
-  setupFilesAfterEnv: [
-    '<rootDir>/jest.setup.ts',
+  testMatch: [
+    '**/__tests__/**/*.ts?(x)',
+    '**/?(*.)+(spec|test).ts?(x)'
   ],
-  moduleNameMapper: {
-    // Handle CSS imports (with CSS modules)
-    '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
-    // Handle CSS imports (without CSS modules)
-    '^.+\\.(css|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
-    // Handle image imports
-    '^.+\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    // Handle module aliases
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  moduleDirectories: ['node_modules', '<rootDir>/'],
-  testEnvironmentOptions: {
-    url: 'http://localhost:3000',
-  },
-  verbose: true,
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.jest.json',
-      isolatedModules: true,
-    },
-  },
-  reporters: [
-    'default',
-    ['jest-junit', {
-      outputDirectory: 'coverage',
-      outputName: 'junit.xml',
-      classNameTemplate: '{classname}',
-      titleTemplate: '{title}',
-      ancestorSeparator: ' › ',
-      usePathForSuiteName: true,
-    }],
-  ],
+  testTimeout: 10000,
+  verbose: true
 };
+
+module.exports = createJestConfig(customJestConfig);

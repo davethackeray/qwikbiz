@@ -1,77 +1,91 @@
-import React from 'react';
-import { GoogleButton } from '../../atoms/GoogleButton';
-import { useAuth } from '../../../context/AuthContext';
+'use client';
+
+import React, { FormEvent, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/atoms/Button';
 
 export function LoginForm() {
-  const { signInWithGoogle, loading, error } = useAuth();
+  const { login, error, loading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const handleGoogleSignIn = async () => {
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (isRedirecting) return;
+
     try {
-      await signInWithGoogle();
+      console.log('Attempting login...');
+      setIsRedirecting(true);
+      
+      // Login to get session and set cookie
+      await login(email, password);
+      
+      console.log('Login successful, waiting for cookie...');
+      
+      // Allow time for cookie to be set
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('Navigating to dashboard...');
+      // Force full page navigation to ensure cookie is used
+      window.location.assign('/dashboard');
+      
     } catch (err) {
-      // Error handling is managed by AuthContext
-      console.error('Failed to sign in with Google:', err);
+      console.error('Login error:', err);
+      setIsRedirecting(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md p-6 space-y-6 bg-white rounded-lg shadow-lg">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Welcome to BizSim
-        </h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Sign in to access your business simulation dashboard
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <GoogleButton
-          onClick={handleGoogleSignIn}
-          loading={loading}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
-
-        {error && (
-          <div
-            role="alert"
-            className="p-4 text-sm text-red-700 bg-red-100 rounded-md"
-          >
-            {error.message}
-          </div>
-        )}
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 text-gray-500 bg-white">
-              Protected by BizSim
-            </span>
-          </div>
-        </div>
-
-        <div className="text-xs text-center text-gray-500">
-          By signing in, you agree to our{' '}
-          <a
-            href="/terms"
-            className="text-blue-600 hover:text-blue-800"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Terms of Service
-          </a>
-          {' '}and{' '}
-          <a
-            href="/privacy"
-            className="text-blue-600 hover:text-blue-800"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Privacy Policy
-          </a>
-        </div>
       </div>
-    </div>
+
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {error && (
+        <div className="rounded-md bg-red-50 p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Login failed</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>{error.message}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Button type="submit" disabled={loading || isRedirecting}>
+        {loading || isRedirecting ? 'Logging in...' : 'Login'}
+      </Button>
+    </form>
   );
 }
+
+export default LoginForm;

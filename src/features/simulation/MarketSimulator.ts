@@ -1,6 +1,9 @@
 import { DepartmentNetwork } from './DepartmentNetwork';
 import { EventProcessor } from './EventProcessor';
 import { MetricsAggregator } from './MetricsAggregator';
+import { AuthService } from '@/lib/services/auth';
+import { RateLimiter } from '@/middleware/rateLimit';
+import { config } from '@/lib/config/env';
 
 interface MarketEvent {
   type: string;
@@ -16,16 +19,50 @@ interface SimulationState {
   lastProcessedEvent: number;
 }
 
+interface SimulatorOptions {
+  useAuth?: boolean;
+  useRateLimit?: boolean;
+  tickInterval?: number;
+  testMode?: boolean;
+}
+
 export class MarketSimulator {
+  private authService?: AuthService;
+  private rateLimiter?: RateLimiter;
   private state: SimulationState;
-  private readonly tickInterval = 200; // 200ms per tick to meet performance target
+  private readonly tickInterval: number;
   private simulationInterval: NodeJS.Timeout | null = null;
+  private testMode: boolean;
 
   constructor(
     private departmentNetwork: DepartmentNetwork,
     private eventProcessor: EventProcessor,
-    private metricsAggregator: MetricsAggregator
+    private metricsAggregator: MetricsAggregator,
+    options: SimulatorOptions = {}
   ) {
+    const {
+      useAuth = true,
+      useRateLimit = true,
+      tickInterval = 200, // 200ms per tick to meet performance target
+      testMode = false
+    } = options;
+
+    this.testMode = testMode;
+
+    if (useAuth && !testMode) {
+      this.authService = new AuthService({
+        clientId: config.auth.google.clientId,
+        clientSecret: config.auth.google.clientSecret,
+        redirectUri: config.auth.google.redirectUri,
+        scopes: ['email', 'profile']
+      });
+    }
+    
+    if (useRateLimit && !testMode) {
+      this.rateLimiter = new RateLimiter();
+    }
+
+    this.tickInterval = tickInterval;
     this.state = {
       currentTick: 0,
       events: [],
@@ -33,7 +70,17 @@ export class MarketSimulator {
     };
   }
 
-  start() {
+  async start(userToken?: string) {
+    // Skip auth checks in test mode
+    if (!this.testMode && userToken) {
+      if (this.authService && !this.authService.isAuthenticated()) {
+        throw new Error('Unauthorized');
+      }
+      if (this.rateLimiter && !this.rateLimiter.allowRequest(userToken)) {
+        throw new Error('Rate limit exceeded');
+      }
+    }
+
     if (this.simulationInterval) return;
 
     this.simulationInterval = setInterval(() => {

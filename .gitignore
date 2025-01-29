@@ -51,3 +51,7 @@ next-env.d.ts
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# performance testing
+/dist
+performance-results.json

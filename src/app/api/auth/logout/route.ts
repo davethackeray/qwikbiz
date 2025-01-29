@@ -1,25 +1,42 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { TOKEN_NAME } from '@/lib/utils/auth';
+import jwt from 'jsonwebtoken';
 
-export async function POST() {
+const JWT_SECRET = process.env.JWT_SECRET || 'development-secret';
+
+export async function POST(request: Request) {
   try {
-    // Create response
-    const response = NextResponse.json({ message: 'Logged out successfully' });
-    
-    // Clear the auth cookie by setting it to expire immediately
-    response.cookies.set({
-      name: TOKEN_NAME,
-      value: '',
-      expires: new Date(0),
-      path: '/',
-    });
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { message: 'No token provided' },
+        { status: 401 }
+      );
+    }
 
-    return response;
+    const token = authHeader.split(' ')[1];
+    try {
+      // Verify token before accepting logout
+      jwt.verify(token, JWT_SECRET);
+
+      // In a real application, you might:
+      // 1. Add token to a blacklist
+      // 2. Clear any server-side sessions
+      // 3. Revoke refresh tokens
+      // 4. Clear any application-specific data
+
+      return NextResponse.json({
+        message: 'Successfully logged out'
+      });
+    } catch (err) {
+      // Even if token is invalid, consider the user logged out
+      return NextResponse.json({
+        message: 'Successfully logged out'
+      });
+    }
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json(
-      { error: 'Failed to logout' },
+      { message: 'Internal server error' },
       { status: 500 }
     );
   }

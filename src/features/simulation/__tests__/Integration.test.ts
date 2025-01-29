@@ -2,6 +2,7 @@ import { MarketSimulator } from '../MarketSimulator';
 import { DepartmentNetwork } from '../DepartmentNetwork';
 import { EventProcessor } from '../EventProcessor';
 import { MetricsAggregator } from '../MetricsAggregator';
+import { jest } from '@jest/globals';
 
 interface MarketEvent {
   type: string;
@@ -55,7 +56,9 @@ describe('Market Simulation Integration', () => {
     departmentNetwork = new DepartmentNetwork(departments);
     eventProcessor = new EventProcessor();
     metricsAggregator = new MetricsAggregator();
-    simulator = new MarketSimulator(departmentNetwork, eventProcessor, metricsAggregator);
+    simulator = new MarketSimulator(departmentNetwork, eventProcessor, metricsAggregator, {
+      testMode: true // Enable test mode to bypass auth and rate limiting
+    });
   });
 
   afterEach(() => {
@@ -68,7 +71,7 @@ describe('Market Simulation Integration', () => {
       jest.useFakeTimers();
     });
 
-    it('should propagate effects through department network', () => {
+    it('should propagate effects through department network', async () => {
       // Create market event that affects sales
       const event: MarketEvent = {
         type: 'market_shift',
@@ -78,7 +81,7 @@ describe('Market Simulation Integration', () => {
         metadata: { cause: 'new_market_opportunity' }
       };
 
-      simulator.start();
+      await simulator.start(); // No token needed in test mode
       simulator.addEvents([event]);
 
       // Advance time to allow event processing
@@ -93,7 +96,7 @@ describe('Market Simulation Integration', () => {
       expect(marketingState?.metrics.performance).not.toBe(85);
     });
 
-    it('should maintain consistent metrics over time', () => {
+    it('should maintain consistent metrics over time', async () => {
       const events: MarketEvent[] = [
         {
           type: 'market_shift',
@@ -111,7 +114,7 @@ describe('Market Simulation Integration', () => {
         }
       ];
 
-      simulator.start();
+      await simulator.start();
       simulator.addEvents(events);
 
       // Check initial state
@@ -134,7 +137,7 @@ describe('Market Simulation Integration', () => {
   });
 
   describe('Performance and State Management', () => {
-    it('should handle rapid event sequences within performance targets', () => {
+    it('should handle rapid event sequences within performance targets', async () => {
       const events: MarketEvent[] = Array.from({ length: 10 }, (_, i) => ({
         type: 'rapid_change',
         departmentId: 'operations',
@@ -143,15 +146,15 @@ describe('Market Simulation Integration', () => {
         metadata: { sequence: i }
       }));
 
-      const start = Date.now();
+      const start = performance.now();
       
-      simulator.start();
+      await simulator.start();
       simulator.addEvents(events);
       
       // Process all events
       jest.advanceTimersByTime(2000);
       
-      const duration = Date.now() - start;
+      const duration = performance.now() - start;
       expect(duration).toBeLessThanOrEqual(200);
 
       // Verify state consistency
@@ -159,7 +162,7 @@ describe('Market Simulation Integration', () => {
       expect(state.events.length).toBe(10);
     });
 
-    it('should maintain system stability under load', () => {
+    it('should maintain system stability under load', async () => {
       // Create events targeting all departments
       const departments = ['sales', 'marketing', 'operations'];
       const events: MarketEvent[] = departments.flatMap(dept => 
@@ -172,7 +175,7 @@ describe('Market Simulation Integration', () => {
         }))
       );
 
-      simulator.start();
+      await simulator.start();
       simulator.addEvents(events);
 
       // Process events over time

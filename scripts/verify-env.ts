@@ -1,63 +1,16 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
-import { config } from '../src/lib/config/env';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import dotenv from 'dotenv';
+import { validateEnv } from '../src/lib/config/env.js';
 
-console.log('🔍 Verifying environment configuration...\n');
+// Set up __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const verifyGoogleAuth = () => {
-  console.log('📱 Checking Google OAuth configuration...');
-  const { clientId, clientSecret, redirectUri } = config.auth.google;
+// Load environment variables from .env files
+dotenv.config({ path: resolve(__dirname, '../.env.local') });
 
-  if (!clientId || !clientSecret || !redirectUri) {
-    throw new Error('Missing required Google OAuth configuration');
-  }
-
-  if (!redirectUri.startsWith('http')) {
-    throw new Error('Invalid redirect URI format - must be a valid URL');
-  }
-
-  console.log('✅ Google OAuth configuration verified');
-};
-
-const verifyJWT = () => {
-  console.log('🔑 Checking JWT configuration...');
-  const { secret } = config.auth.jwt;
-
-  if (!secret) {
-    throw new Error('Missing JWT secret');
-  }
-
-  if (secret.length < 32) {
-    throw new Error('JWT secret should be at least 32 characters long');
-  }
-
-  console.log('✅ JWT configuration verified');
-};
-
-const verifyAppConfig = () => {
-  console.log('⚙️ Checking app configuration...');
-  const { url, env } = config.app;
-
-  if (!url.startsWith('http')) {
-    throw new Error('Invalid APP_URL format - must be a valid URL');
-  }
-
-  if (!['development', 'production', 'test'].includes(env)) {
-    throw new Error('Invalid NODE_ENV - must be development, production, or test');
-  }
-
-  console.log('✅ App configuration verified');
-};
-
-try {
-  verifyGoogleAuth();
-  verifyJWT();
-  verifyAppConfig();
-
-  console.log('\n🎉 All environment variables verified successfully!');
-  process.exit(0);
-} catch (error: any) {
-  console.error('\n❌ Environment verification failed:');
-  console.error(error.message);
-  process.exit(1);
-}
+// Just validate environment variables and exit with appropriate code
+process.exit(validateEnv() ? 0 : 1);

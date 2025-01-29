@@ -1,6 +1,6 @@
 import { type RequestCookies } from 'next/dist/server/web/spec-extension/cookies';
 import { type ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-import jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 
 export interface TokenPayload {
   sub: string;
@@ -10,11 +10,8 @@ export interface TokenPayload {
 }
 
 export const TOKEN_NAME = 'auth_token';
-const JWT_SECRET = process.env.JWT_SECRET || 'development-secret';
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'development-secret');
 
-/**
- * Create a cookie configuration for the auth token
- */
 export function createAuthCookie(token: string): ResponseCookie {
   return {
     name: TOKEN_NAME,
@@ -27,26 +24,40 @@ export function createAuthCookie(token: string): ResponseCookie {
   };
 }
 
-/**
- * Create a new JWT token with the given payload
- */
-export function createToken(payload: Omit<TokenPayload, 'exp'>): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+export async function createToken(payload: Omit<TokenPayload, 'exp'>): Promise<string> {
+  return await new jose.SignJWT({
+    ...payload,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('7d')
+    .sign(JWT_SECRET);
 }
 
-export function verifyToken(token: string): TokenPayload {
+export async function verifyToken(token: string): Promise<TokenPayload> {
   try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+    console.log('Verifying token...');
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    console.log('Token verified successfully:', payload);
+    return payload as TokenPayload;
   } catch (error) {
+    console.error('Token verification failed:', error);
     throw new Error('Invalid token');
   }
 }
 
-export function isValidToken(token: string): boolean {
+export async function isValidToken(token: string): Promise<boolean> {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    return !!decoded.exp && decoded.exp > Date.now() / 1000;
-  } catch {
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    // Just verify we have required fields
+    if (!payload.sub || !payload.email || !payload.name) {
+      console.log('Token missing required fields');
+      return false;
+    }
+    console.log('Token is valid');
+    return true;
+  } catch (error) {
+    console.log('Token validation failed:', error);
     return false;
   }
 }

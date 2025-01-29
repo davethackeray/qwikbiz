@@ -97,7 +97,10 @@ describe('EventProcessor', () => {
       const history = processor.getEventHistory();
       
       expect(history).toHaveLength(5);
-      expect(history.map(e => e.impact)).toEqual([0.1, 0.2, 0.3, 0.4, 0.5]);
+      expect(history.map(e => e.impact)).toEqual([0.1, 0.2, 0.3, 0.4, 0.5].map(value => expect.any(Number)));
+      history.forEach((event, index) => {
+        expect(event.impact).toBeCloseTo(0.1 * (index + 1), 10);
+      });
     });
 
     it('should clear history when requested', () => {

@@ -1,4 +1,4 @@
-interface MarketEvent {
+interface MetricsEvent {
   type: string;
   departmentId: string;
   impact: number;
@@ -6,135 +6,209 @@ interface MarketEvent {
   metadata?: Record<string, any>;
 }
 
-interface MetricSnapshot {
+interface MetricsState {
+  metrics: Record<string, number>;
   timestamp: number;
-  metrics: {
-    [key: string]: number;
-  };
 }
 
 interface DepartmentMetrics {
-  performance: number[];
-  efficiency: number[];
-  satisfaction: number[];
-  timestamps: number[];
+  currentValue: number;
+  previousValues: number[];
+  lastUpdateTime: number;
 }
 
 export class MetricsAggregator {
-  private readonly windowSize = 100; // Keep last 100 data points
-  private departmentMetrics: Map<string, DepartmentMetrics>;
-  private lastCalculation: number;
-  private metricsCache: Map<string, MetricSnapshot>;
-  
+  private metricsCache: Map<string, DepartmentMetrics>;
+  private readonly historyWindow = 10; // Keep last 10 values for moving averages
+  private readonly batchSize = 50; // Process events in batches for performance
+  private readonly updateThreshold = 100; // Minimum ms between full recalculations
+
   constructor() {
-    this.departmentMetrics = new Map();
-    this.lastCalculation = Date.now();
     this.metricsCache = new Map();
   }
 
-  aggregateMetrics(events: MarketEvent[]) {
-    const startTime = Date.now();
+  aggregateMetrics(events: MetricsEvent[]): MetricsState {
+    const now = Date.now();
+    const metrics: Record<string, number> = {};
     
+    // Process events in batches for better performance
+    for (let i = 0; i < events.length; i += this.batchSize) {
+      const batch = events.slice(i, i + this.batchSize);
+      this.processEventBatch(batch, metrics);
+    }
+
+    // Calculate moving averages and finalize metrics
+    for (const [deptId, deptMetrics] of this.metricsCache.entries()) {
+      if (now - deptMetrics.lastUpdateTime > this.updateThreshold) {
+        metrics[deptId] = this.calculateMovingAverage(deptMetrics);
+        deptMetrics.lastUpdateTime = now;
+      } else {
+        metrics[deptId] = deptMetrics.currentValue;
+      }
+    }
+
+    return {
+      metrics,
+      timestamp: now
+    };
+  }
+
+  private processEventBatch(events: MetricsEvent[], metrics: Record<string, number>) {
     events.forEach(event => {
-      this.updateMetrics(event);
+      let deptMetrics = this.metricsCache.get(event.departmentId);
+      
+      if (!deptMetrics) {
+        deptMetrics = {
+          currentValue: 0,
+          previousValues: [],
+          lastUpdateTime: 0
+        };
+        this.metricsCache.set(event.departmentId, deptMetrics);
+      }
+
+      // Update metrics
+      const newValue = this.calculateMetricValue(deptMetrics.currentValue, event);
+      deptMetrics.previousValues.push(deptMetrics.currentValue);
+      
+      // Maintain history window size
+      if (deptMetrics.previousValues.length > this.historyWindow) {
+        deptMetrics.previousValues.shift();
+      }
+      
+      deptMetrics.currentValue = newValue;
     });
+  }
 
-    // Calculate and cache aggregated metrics
-    this.calculateAggregatedMetrics(events);
+  private calculateMetricValue(currentValue: number, event: MetricsEvent): number {
+    // Implement optimized metric calculation logic
+    const baseImpact = event.impact * this.getImpactMultiplier(event.type);
+    const newValue = currentValue + baseImpact;
+    return Math.max(0, Math.min(100, newValue)); // Ensure value stays within bounds
+  }
 
-    const endTime = Date.now();
-    const processingTime = endTime - startTime;
+  private calculateMovingAverage(metrics: DepartmentMetrics): number {
+    if (metrics.previousValues.length === 0) {
+      return metrics.currentValue;
+    }
 
-    // Log if processing time exceeds threshold
-    if (processingTime > 200) {
-      console.warn(`Metrics aggregation took ${processingTime}ms, exceeding 200ms target`);
+    // Calculate weighted moving average
+    const weights = metrics.previousValues.map((_, i) => 
+      1 + (i / metrics.previousValues.length) * 0.5
+    );
+    const totalWeight = weights.reduce((a, b) => a + b, 1); // +1 for current value
+
+    const weightedSum = metrics.previousValues.reduce((sum, value, i) => 
+      sum + value * weights[i], 0
+    );
+
+    return (weightedSum + metrics.currentValue) / totalWeight;
+  }
+
+  private getImpactMultiplier(eventType: string): number {
+    // Optimize impact calculation based on event type
+    switch (eventType) {
+      case 'market_shift':
+        return 0.8;
+      case 'rapid_change':
+        return 0.5;
+      case 'stress_test':
+        return 0.3;
+      default:
+        return 0.6;
     }
   }
 
-  private updateMetrics(event: MarketEvent) {
-    let deptMetrics = this.departmentMetrics.get(event.departmentId);
+  getMetrics(): MetricsState {
+    const metrics: Record<string, number> = {};
     
-    if (!deptMetrics) {
-      deptMetrics = {
-        performance: [],
-        efficiency: [],
-        satisfaction: [],
-        timestamps: []
-      };
-      this.departmentMetrics.set(event.departmentId, deptMetrics);
+    for (const [deptId, deptMetrics] of this.metricsCache.entries()) {
+      metrics[deptId] = deptMetrics.currentValue;
     }
 
-    // Add new data point
-    deptMetrics.timestamps.push(event.timestamp);
-    
-    // Calculate impact on each metric
-    const perfImpact = event.impact * 0.6;
-    const effImpact = event.impact * 0.4;
-    const satImpact = event.impact * 0.3;
-
-    deptMetrics.performance.push(this.calculateMovingAverage(deptMetrics.performance, perfImpact));
-    deptMetrics.efficiency.push(this.calculateMovingAverage(deptMetrics.efficiency, effImpact));
-    deptMetrics.satisfaction.push(this.calculateMovingAverage(deptMetrics.satisfaction, satImpact));
-
-    // Maintain window size
-    if (deptMetrics.timestamps.length > this.windowSize) {
-      deptMetrics.timestamps.shift();
-      deptMetrics.performance.shift();
-      deptMetrics.efficiency.shift();
-      deptMetrics.satisfaction.shift();
-    }
-  }
-
-  private calculateMovingAverage(values: number[], newValue: number): number {
-    if (values.length === 0) return newValue;
-    
-    const avg = values[values.length - 1];
-    return avg * 0.7 + newValue * 0.3; // Exponential moving average
-  }
-
-  private calculateAggregatedMetrics(events: MarketEvent[]) {
-    const currentTime = Date.now();
-    const metrics: { [key: string]: number } = {};
-
-    // Only recalculate if we have new events
-    if (events.length > 0) {
-      this.departmentMetrics.forEach((deptMetrics, departmentId) => {
-        const len = deptMetrics.performance.length;
-        if (len > 0) {
-          metrics[`${departmentId}_performance`] = deptMetrics.performance[len - 1];
-          metrics[`${departmentId}_efficiency`] = deptMetrics.efficiency[len - 1];
-          metrics[`${departmentId}_satisfaction`] = deptMetrics.satisfaction[len - 1];
-        }
-      });
-
-      // Cache the results
-      this.metricsCache.set('latest', {
-        timestamp: currentTime,
-        metrics
-      });
-    }
-
-    this.lastCalculation = currentTime;
-  }
-
-  getMetrics(): MetricSnapshot {
-    const cached = this.metricsCache.get('latest');
-    if (cached && Date.now() - cached.timestamp < 200) {
-      return cached;
-    }
-    
-    // If cache is stale, return last known metrics but trigger async update
-    setTimeout(() => this.calculateAggregatedMetrics([]), 0);
-    return cached || { timestamp: Date.now(), metrics: {} };
-  }
-
-  getDepartmentMetrics(departmentId: string): DepartmentMetrics | null {
-    return this.departmentMetrics.get(departmentId) || null;
+    return {
+      metrics,
+      timestamp: Date.now()
+    };
   }
 
   reset() {
-    this.departmentMetrics.clear();
     this.metricsCache.clear();
-    this.lastCalculation = Date.now();
+  }
+
+  /**
+   * Analyze trends in KPI data and return insights
+   */
+  analyzeTrends(kpis: Array<{ type: string; value: number; history?: number[] }>): Array<{ 
+    metric: string;
+    trend: {
+      direction: 'up' | 'down' | 'stable';
+      percentage: number;
+      period: string;
+      compare?: {
+        value: number;
+        period: string;
+      }
+    }
+  }> {
+    return kpis.map(kpi => {
+      const history = kpi.history || [];
+      const currentValue = kpi.value;
+      const previousValue = history[history.length - 1] || currentValue;
+      
+      const percentageChange = ((currentValue - previousValue) / previousValue) * 100;
+      const direction = 
+        Math.abs(percentageChange) < 1 ? 'stable' :
+        percentageChange > 0 ? 'up' : 'down';
+
+      return {
+        metric: kpi.type,
+        trend: {
+          direction,
+          percentage: Math.abs(percentageChange),
+          period: 'current',
+          compare: {
+            value: previousValue,
+            period: 'previous'
+          }
+        }
+      };
+    });
+  }
+
+  /**
+   * Get historical data for a specific metric
+   */
+  getHistoricalData(metricId: string, period: string): {
+    data: number[];
+    trend: {
+      direction: 'up' | 'down' | 'stable';
+      percentage: number;
+      period: string;
+    }
+  } {
+    const metrics = this.metricsCache.get(metricId);
+    
+    if (!metrics) {
+      return {
+        data: [],
+        trend: { direction: 'stable', percentage: 0, period }
+      };
+    }
+
+    const data = [...metrics.previousValues, metrics.currentValue];
+    const first = data[0] || 0;
+    const last = data[data.length - 1] || 0;
+    const percentageChange = ((last - first) / first) * 100;
+
+    return {
+      data,
+      trend: {
+        direction: 
+          Math.abs(percentageChange) < 1 ? 'stable' :
+          percentageChange > 0 ? 'up' : 'down',
+        percentage: Math.abs(percentageChange),
+        period
+      }
+    };
   }
 }
