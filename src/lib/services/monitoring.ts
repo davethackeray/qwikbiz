@@ -1,180 +1,269 @@
-import { EventEmitter } from 'node:events';
-import type { ProcessingMetrics } from '../../features/simulation/types.js';
+import { type TokenPayload } from '@/lib/utils/auth';
 
-import type { EventTypeMetrics } from '../../features/simulation/types.js';
+export type AuthEvent = {
+  type: 'login' | 'logout' | 'refresh' | 'error' | 'rate_limit' | 'token_revoked';
+  timestamp: number;
+  userId?: string;
+  sessionId?: string;
+  metadata?: Record<string, any>;
+};
 
-interface Alert {
-  type: 'warning' | 'error';
-  metric: string;
+export type AuthMetric = {
+  name: string;
   value: number;
-  threshold: number;
+  timestamp: number;
+  labels?: Record<string, string>;
+};
+
+export type ErrorContext = {
+  code: string;
   message: string;
+  stack?: string;
+  userId?: string;
+  sessionId?: string;
+  metadata?: Record<string, any>;
   timestamp: number;
-}
+};
 
-interface MetricsSnapshot {
-  metrics: ProcessingMetrics;
-  eventTypeMetrics: Map<string, EventTypeMetrics>;
-  timestamp: number;
-}
+export type AlertCondition = {
+  metric: string;
+  threshold: number;
+  duration: number;
+  severity: 'info' | 'warning' | 'error' | 'critical';
+};
 
-export interface ThresholdConfig {
-  throughputMin: number;     // events/sec
-  latencyMax: number;        // ms
-  memoryMax: number;         // MB
-  batchSizeMin: number;      // events
-  processingTimeMax: number; // ms
-}
+export type TimeFrame = {
+  start: number;
+  end: number;
+};
 
-export class PerformanceMonitor {
-  private static instance: PerformanceMonitor;
-  private eventEmitter: EventEmitter;
-  private metricsHistory: MetricsSnapshot[] = [];
-  private readonly historyLimit = 1000;
-  private thresholds: ThresholdConfig;
+const METRICS_RETENTION = 24 * 60 * 60 * 1000; // 24 hours
+const ERROR_RETENTION = 7 * 24 * 60 * 60 * 1000; // 7 days
+const EVENT_BATCH_SIZE = 100;
+const ALERT_CHECK_INTERVAL = 60 * 1000; // 1 minute
 
-  private constructor() {
-    this.eventEmitter = new EventEmitter();
-    this.thresholds = {
-      throughputMin: 100000,    // 100k events/sec
-      latencyMax: 200,         // 200ms
-      memoryMax: 512,         // 512MB
-      batchSizeMin: 25,       // 25 events
-      processingTimeMax: 100,  // 100ms
-    };
+class AuthMonitoringService {
+  private events: AuthEvent[] = [];
+  private metrics: AuthMetric[] = [];
+  private errors: ErrorContext[] = [];
+  private alertConditions: AlertCondition[] = [];
+  private alertCheckInterval: NodeJS.Timeout;
 
-    // Set high water mark for event emissions
-    this.eventEmitter.setMaxListeners(50);
+  constructor() {
+    // Set up regular maintenance
+    this.setupMaintenance();
+    // Set up alert checking
+    this.alertCheckInterval = setInterval(() => {
+      this.checkAlerts();
+    }, ALERT_CHECK_INTERVAL);
   }
 
-  static getInstance(): PerformanceMonitor {
-    if (!PerformanceMonitor.instance) {
-      PerformanceMonitor.instance = new PerformanceMonitor();
-    }
-    return PerformanceMonitor.instance;
-  }
-
-  updateMetrics(metrics: ProcessingMetrics): void {
-    const snapshot: MetricsSnapshot = {
-      metrics,
-      eventTypeMetrics: new Map(),
-      timestamp: Date.now()
-    };
-
-    // Add to history
-    this.metricsHistory.push(snapshot);
-    if (this.metricsHistory.length > this.historyLimit) {
-      this.metricsHistory.shift();
-    }
-
-    // Calculate derived metrics
-    const throughput = this.calculateThroughput(snapshot);
-    
-    // Check thresholds and emit alerts
-    this.checkThresholds({
-      ...metrics,
-      throughput
+  // Event Tracking
+  public trackEvent(event: AuthEvent): void {
+    this.events.push({
+      ...event,
+      timestamp: event.timestamp || Date.now()
     });
 
-    // Emit metrics update
-    this.eventEmitter.emit('metrics', {
-      ...metrics,
-      throughput,
-      timestamp: snapshot.timestamp
+    if (this.events.length >= EVENT_BATCH_SIZE) {
+      this.processEvents();
+    }
+  }
+
+  // Metric Collection
+  public recordMetric(metric: AuthMetric): void {
+    this.metrics.push({
+      ...metric,
+      timestamp: metric.timestamp || Date.now()
     });
   }
 
-  updateTypeMetrics(type: string, metrics: EventTypeMetrics): void {
-    if (this.metricsHistory.length > 0) {
-      const latest = this.metricsHistory[this.metricsHistory.length - 1];
-      latest.eventTypeMetrics.set(type, metrics);
-    }
-  }
-
-  private calculateThroughput(snapshot: MetricsSnapshot): number {
-    if (this.metricsHistory.length < 2) return 0;
-    
-    const previous = this.metricsHistory[this.metricsHistory.length - 2];
-    const timeDiff = snapshot.timestamp - previous.timestamp;
-    const eventsDiff = snapshot.metrics.eventsProcessed - previous.metrics.eventsProcessed;
-    
-    return timeDiff > 0 ? (eventsDiff / timeDiff) * 1000 : 0;
-  }
-
-  private checkThresholds(metrics: ProcessingMetrics & { throughput: number }): void {
-    // Check throughput
-    if (metrics.throughput < this.thresholds.throughputMin) {
-      this.emitAlert('warning', 'throughput', metrics.throughput, this.thresholds.throughputMin,
-        `Throughput dropped below ${this.thresholds.throughputMin} events/sec`);
-    }
-
-    // Check latency
-    if (metrics.averageLatency > this.thresholds.latencyMax) {
-      this.emitAlert('warning', 'latency', metrics.averageLatency, this.thresholds.latencyMax,
-        `Latency exceeded ${this.thresholds.latencyMax}ms`);
-    }
-
-    // Check memory
-    const memoryMB = metrics.memoryUsage / (1024 * 1024);
-    if (memoryMB > this.thresholds.memoryMax) {
-      this.emitAlert('error', 'memory', memoryMB, this.thresholds.memoryMax,
-        `Memory usage exceeded ${this.thresholds.memoryMax}MB`);
-    }
-
-    // Check batch size
-    if (metrics.lastBatchSize < this.thresholds.batchSizeMin) {
-      this.emitAlert('warning', 'batchSize', metrics.lastBatchSize, this.thresholds.batchSizeMin,
-        `Batch size below ${this.thresholds.batchSizeMin} events`);
-    }
-
-    // Check processing time per batch
-    const processingTimePerBatch = metrics.totalProcessingTime / metrics.batchesProcessed;
-    if (processingTimePerBatch > this.thresholds.processingTimeMax) {
-      this.emitAlert('warning', 'processingTime', processingTimePerBatch, this.thresholds.processingTimeMax,
-        `Processing time per batch exceeded ${this.thresholds.processingTimeMax}ms`);
-    }
-  }
-
-  private emitAlert(type: Alert['type'], metric: string, value: number, threshold: number, message: string): void {
-    const alert: Alert = {
-      type,
-      metric,
-      value,
-      threshold,
-      message,
-      timestamp: Date.now()
+  // Error Handling
+  public handleError(error: ErrorContext): void {
+    const errorWithTimestamp = {
+      ...error,
+      timestamp: error.timestamp || Date.now()
     };
-    this.eventEmitter.emit('alert', alert);
+    this.errors.push(errorWithTimestamp);
+
+    // Track as event
+    this.trackEvent({
+      type: 'error',
+      timestamp: Date.now(),
+      userId: error.userId,
+      sessionId: error.sessionId,
+      metadata: {
+        code: error.code,
+        message: error.message
+      }
+    });
   }
 
-  onMetrics(callback: (metrics: ProcessingMetrics & { throughput: number; timestamp: number }) => void): void {
-    this.eventEmitter.on('metrics', callback);
+  // Alert Management
+  public addAlertCondition(condition: AlertCondition): void {
+    this.alertConditions.push(condition);
   }
 
-  onAlert(callback: (alert: Alert) => void): void {
-    this.eventEmitter.on('alert', callback);
-  }
+  // Analytics
+  public getMetrics(timeframe: TimeFrame) {
+    const relevantMetrics = this.metrics.filter(
+      m => m.timestamp >= timeframe.start && m.timestamp <= timeframe.end
+    );
 
-  getMetricsHistory(): MetricsSnapshot[] {
-    return [...this.metricsHistory];
-  }
-
-  updateThresholds(config: Partial<ThresholdConfig>): void {
-    this.thresholds = {
-      ...this.thresholds,
-      ...config
+    return {
+      total: relevantMetrics.length,
+      metrics: this.aggregateMetrics(relevantMetrics)
     };
   }
 
-  getThresholds(): ThresholdConfig {
-    return { ...this.thresholds };
+  public getErrors(timeframe: TimeFrame) {
+    const { start, end } = timeframe;
+    return this.errors.filter(e => e.timestamp >= start && e.timestamp <= end);
   }
 
-  reset(): void {
-    this.metricsHistory = [];
-    this.eventEmitter.removeAllListeners();
+  // Token Lifecycle Monitoring
+  public trackTokenLifecycle(token: TokenPayload, action: 'created' | 'refreshed' | 'revoked'): void {
+    this.trackEvent({
+      type: action === 'revoked' ? 'token_revoked' : 'refresh',
+      timestamp: Date.now(),
+      userId: token.sub,
+      metadata: {
+        action,
+        tokenType: token.type,
+        jti: token.jti
+      }
+    });
+  }
+
+  // Rate Limit Monitoring
+  public trackRateLimit(userId: string | undefined, path: string): void {
+    this.trackEvent({
+      type: 'rate_limit',
+      timestamp: Date.now(),
+      userId,
+      metadata: {
+        path
+      }
+    });
+
+    this.recordMetric({
+      name: 'rate_limit_hit',
+      value: 1,
+      timestamp: Date.now(),
+      labels: {
+        path
+      }
+    });
+  }
+
+  private processEvents(): void {
+    // Process event batch
+    const now = Date.now();
+    const recentEvents = this.events.filter(
+      e => now - e.timestamp < METRICS_RETENTION
+    );
+
+    // Calculate metrics
+    const eventCounts = new Map<string, number>();
+    recentEvents.forEach(event => {
+      const count = eventCounts.get(event.type) || 0;
+      eventCounts.set(event.type, count + 1);
+    });
+
+    // Record metrics
+    eventCounts.forEach((count, type) => {
+      this.recordMetric({
+        name: `auth_events_${type}`,
+        value: count,
+        timestamp: now
+      });
+    });
+
+    // Clear processed events
+    this.events = [];
+  }
+
+  private checkAlerts(): void {
+    const now = Date.now();
+    
+    this.alertConditions.forEach(condition => {
+      const relevantMetrics = this.metrics
+        .filter(m => m.name === condition.metric)
+        .filter(m => now - m.timestamp <= condition.duration);
+
+      if (relevantMetrics.length > 0) {
+        const average = relevantMetrics.reduce((sum, m) => sum + m.value, 0) / relevantMetrics.length;
+        
+        if (average >= condition.threshold) {
+          console.error(`[Auth Monitor] Alert: ${condition.metric} threshold exceeded`, {
+            severity: condition.severity,
+            current: average,
+            threshold: condition.threshold
+          });
+        }
+      }
+    });
+  }
+
+  private setupMaintenance(): void {
+    // Regular cleanup
+    setInterval(() => {
+      const now = Date.now();
+
+      // Clean up old metrics
+      this.metrics = this.metrics.filter(
+        m => now - m.timestamp < METRICS_RETENTION
+      );
+
+      // Clean up old errors
+      this.errors = this.errors.filter(
+        e => now - e.timestamp < ERROR_RETENTION
+      );
+
+      // Process any remaining events
+      if (this.events.length > 0) {
+        this.processEvents();
+      }
+    }, 60 * 60 * 1000); // Every hour
+  }
+
+  private aggregateMetrics(metrics: AuthMetric[]) {
+    const aggregated = new Map<string, {
+      count: number;
+      sum: number;
+      min: number;
+      max: number;
+    }>();
+
+    metrics.forEach(metric => {
+      const current = aggregated.get(metric.name) || {
+        count: 0,
+        sum: 0,
+        min: Infinity,
+        max: -Infinity
+      };
+
+      aggregated.set(metric.name, {
+        count: current.count + 1,
+        sum: current.sum + metric.value,
+        min: Math.min(current.min, metric.value),
+        max: Math.max(current.max, metric.value)
+      });
+    });
+
+    return Array.from(aggregated.entries()).map(([name, stats]) => ({
+      name,
+      average: stats.sum / stats.count,
+      count: stats.count,
+      min: stats.min,
+      max: stats.max
+    }));
+  }
+
+  public dispose(): void {
+    clearInterval(this.alertCheckInterval);
   }
 }
 
 // Export singleton instance
-export const performanceMonitor = PerformanceMonitor.getInstance();
+export const authMonitor = new AuthMonitoringService();

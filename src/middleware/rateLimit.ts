@@ -1,65 +1,105 @@
+import { authMonitor } from '@/lib/services/monitoring';
+
 interface RateLimitInfo {
   count: number;
   lastRequest: number;
 }
 
+interface RateLimitConfig {
+  windowMs: number;
+  maxRequests: number;
+}
+
 /**
- * Rate limiter implementation that works in both Next.js and non-Next.js contexts
+ * Rate limiter implementation that works in Edge Runtime
+ * Supports different rate limits for different endpoint types
  */
 export class RateLimiter {
   private rateLimitMap: Map<string, RateLimitInfo>;
-  private readonly window: number;
-  private readonly maxRequests: number;
+  public readonly authConfig: RateLimitConfig;
+  public readonly defaultConfig: RateLimitConfig;
 
-  constructor(windowMs = 60 * 1000, maxRequests = 10) {
+  constructor(
+    authConfig: RateLimitConfig = { windowMs: 60 * 1000, maxRequests: 5 },
+    defaultConfig: RateLimitConfig = { windowMs: 60 * 1000, maxRequests: 30 }
+  ) {
     this.rateLimitMap = new Map();
-    this.window = windowMs;
-    this.maxRequests = maxRequests;
+    this.authConfig = authConfig;
+    this.defaultConfig = defaultConfig;
   }
 
-  allowRequest(identifier: string): boolean {
+  public getConfig(path: string): RateLimitConfig {
+    return path.startsWith('/api/auth/') ? this.authConfig : this.defaultConfig;
+  }
+
+  allowRequest(identifier: string, path: string): boolean {
     const now = Date.now();
-    const rateLimitInfo = this.rateLimitMap.get(identifier);
+    const config = this.getConfig(path);
+    const key = `${identifier}:${path}`; // Separate limits for auth vs non-auth
+    const rateLimitInfo = this.rateLimitMap.get(key);
 
-    if (!rateLimitInfo) {
-      this.rateLimitMap.set(identifier, { count: 1, lastRequest: now });
+    // Reset limit if outside window
+    if (!rateLimitInfo || (now - rateLimitInfo.lastRequest > config.windowMs)) {
+      this.rateLimitMap.set(key, { count: 1, lastRequest: now });
       return true;
     }
 
-    const timeSinceLastRequest = now - rateLimitInfo.lastRequest;
-    if (timeSinceLastRequest > this.window) {
-      this.rateLimitMap.set(identifier, { count: 1, lastRequest: now });
-      return true;
-    }
-
-    if (rateLimitInfo.count >= this.maxRequests) {
+    // Check if over limit
+    if (rateLimitInfo.count >= config.maxRequests) {
+      // Track rate limit hit
+      authMonitor.trackRateLimit(identifier, path);
       return false;
     }
 
+    // Increment counter
     rateLimitInfo.count += 1;
     rateLimitInfo.lastRequest = now;
     return true;
   }
 
-  reset(identifier?: string) {
-    if (identifier) {
-      this.rateLimitMap.delete(identifier);
+  reset(identifier?: string, path?: string) {
+    if (identifier && path) {
+      this.rateLimitMap.delete(`${identifier}:${path}`);
     } else {
       this.rateLimitMap.clear();
     }
   }
 }
 
-// For Next.js middleware
-export function rateLimit(req: Request) {
-  const limiter = new RateLimiter();
+// Singleton instance to maintain rate limit state
+const globalLimiter = new RateLimiter();
+
+/**
+ * Rate limiting middleware for Next.js Edge Runtime
+ */
+export function rateLimit(req: Request): Response | null {
   const ip = req.headers.get('x-forwarded-for') || 
              req.headers.get('x-real-ip') || 
              'unknown';
+  const path = new URL(req.url).pathname;
   
-  if (!limiter.allowRequest(ip)) {
-    return new Response('Too many requests', { status: 429 });
+  // Check rate limit
+  const isAllowed = globalLimiter.allowRequest(ip, path);
+
+  if (!isAllowed) {
+    const config = path.startsWith('/api/auth/') ? globalLimiter.authConfig : globalLimiter.defaultConfig;
+    const retryAfter = Math.ceil(config.windowMs / 1000);
+
+    // Return JSON response with retry information
+    return new Response(
+      JSON.stringify({
+        error: 'Too many requests',
+        retryAfter: `${retryAfter} seconds`
+      }),
+      { 
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': retryAfter.toString()
+        }
+      }
+    );
   }
 
-  return new Response(null, { status: 200 });
+  return null;
 }

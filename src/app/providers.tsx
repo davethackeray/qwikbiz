@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { AuthProvider } from '@/context/AuthContext';
+import { configureAuthAlerts } from '@/lib/services/auth-alerts';
 
 export default function ClientProviders({
   children,
@@ -10,9 +11,10 @@ export default function ClientProviders({
 }) {
   const [mounted, setMounted] = React.useState(false);
 
-  // Prevent hydration issues by only rendering after mount
+  // Configure auth monitoring on client-side mount
   React.useEffect(() => {
     setMounted(true);
+    configureAuthAlerts();
   }, []);
 
   // Return null during SSR, then render children once mounted client-side

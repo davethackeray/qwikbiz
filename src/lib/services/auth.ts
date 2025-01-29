@@ -1,3 +1,5 @@
+import { authMonitor } from './monitoring';
+
 export interface User {
   id: string;
   email: string;
@@ -76,6 +78,16 @@ class AuthService {
 
     const session = await response.json();
     
+    // Track successful login
+    authMonitor.trackEvent({
+      type: 'login',
+      timestamp: Date.now(),
+      userId: session.user.id,
+      metadata: {
+        email: session.user.email
+      }
+    });
+    
     // Delay localStorage access to avoid hydration issues
     setTimeout(() => {
       if (typeof window !== 'undefined') {
@@ -97,8 +109,23 @@ class AuthService {
             'Content-Type': 'application/json'
           }
         });
+        
+        // Track successful logout
+        authMonitor.trackEvent({
+          type: 'logout',
+          timestamp: Date.now(),
+          userId: session.user.id,
+          sessionId: session.token
+        });
       } catch (err) {
-        // Continue with logout even if API call fails
+        // Track logout error but continue with logout
+        authMonitor.handleError({
+          code: 'LOGOUT_ERROR',
+          message: err instanceof Error ? err.message : 'Failed to logout',
+          timestamp: Date.now(),
+          userId: session.user.id,
+          sessionId: session.token
+        });
         console.error('Logout API error:', err);
       }
     }
@@ -132,12 +159,31 @@ class AuthService {
   }
 
   private static clearSession(): void {
-    // Delay localStorage access to avoid hydration issues
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        window.localStorage.removeItem(this.storageKey);
+    try {
+      const storedData = typeof window !== 'undefined' ? 
+        window.localStorage.getItem(this.storageKey) : null;
+      
+      if (storedData) {
+        const session = JSON.parse(storedData) as Session;
+        // Track session cleared
+        authMonitor.trackEvent({
+          type: 'token_revoked',
+          timestamp: Date.now(),
+          userId: session.user.id,
+          sessionId: session.token
+        });
       }
-    }, 0);
+
+      // Delay localStorage access to avoid hydration issues
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem(this.storageKey);
+        }
+      }, 0);
+    } catch (err) {
+      // Ignore parsing errors during cleanup
+      console.error('Session cleanup error:', err);
+    }
   }
 }
 
